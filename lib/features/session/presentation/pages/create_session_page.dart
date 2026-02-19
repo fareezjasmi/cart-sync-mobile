@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/features/session/presentation/providers/session_providers.dart';
 import 'package:cartsync/shared/providers/app_config_providers.dart';
-import 'package:cartsync/shared/widgets/base_screen_wrapper.dart';
+import 'package:cartsync/shared/widgets/loading_indicator.dart';
 import 'package:cartsync/utils/app_colors.dart';
 
 class CreateSessionPage extends ConsumerStatefulWidget {
@@ -16,6 +16,15 @@ class _CreateSessionPageState extends ConsumerState<CreateSessionPage> {
   final _nameController = TextEditingController();
   final _locationController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  static const _quickLocations = [
+    'Giant Supermarket',
+    'Aeon Mall',
+    'Mr DIY',
+    'Mydin',
+    'Tesco',
+    'Jaya Grocer',
+  ];
 
   @override
   void dispose() {
@@ -42,58 +51,131 @@ class _CreateSessionPageState extends ConsumerState<CreateSessionPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(sessionNotifierProvider);
-    return BaseScreenWrapper(
-      title: 'New Session',
-      isLoading: state.isLoading,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (state.errorMessage != null)
-              Container(
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                    color: AppColors.errorLight,
-                    borderRadius: BorderRadius.circular(8)),
-                child: Text(state.errorMessage!,
-                    style: TextStyle(color: AppColors.error)),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppColors.background,
+          appBar: AppBar(title: const Text('New Session')),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (state.errorMessage != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.errorLight,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_outline, color: AppColors.error, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(state.errorMessage!, style: TextStyle(color: AppColors.error, fontSize: 13)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  _buildLabel('Session Name'),
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: _nameController,
+                    autofocus: true,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(hintText: 'e.g. Weekly Groceries'),
+                    validator: (v) => v == null || v.isEmpty ? 'Enter session name' : null,
+                  ),
+                  const SizedBox(height: 20),
+
+                  Row(
+                    children: [
+                      _buildLabel('📍 Location'),
+                      const SizedBox(width: 4),
+                      Text(
+                        '(optional)',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.textSecondary.withValues(alpha: 0.7),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  TextFormField(
+                    controller: _locationController,
+                    textInputAction: TextInputAction.done,
+                    onFieldSubmitted: (_) => state.isLoading ? null : _onCreate(),
+                    decoration: const InputDecoration(hintText: 'Store name or address'),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Quick locations
+                  Text(
+                    'Quick Select',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _quickLocations.map((loc) => GestureDetector(
+                      onTap: () => setState(() => _locationController.text = loc),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: _locationController.text == loc
+                              ? AppColors.primary
+                              : AppColors.primaryXLight,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          loc,
+                          style: TextStyle(
+                            color: _locationController.text == loc ? Colors.white : AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )).toList(),
+                  ),
+                  const SizedBox(height: 28),
+
+                  ElevatedButton(
+                    onPressed: state.isLoading ? null : _onCreate,
+                    child: const Text('Start Session'),
+                  ),
+                ],
               ),
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Session Name',
-                prefixIcon: Icon(Icons.shopping_bag_outlined),
-                border: OutlineInputBorder(),
-              ),
-              validator: (v) =>
-                  v == null || v.isEmpty ? 'Enter session name' : null,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _locationController,
-              decoration: const InputDecoration(
-                labelText: 'Location (optional)',
-                prefixIcon: Icon(Icons.location_on_outlined),
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: state.isLoading ? null : _onCreate,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
-              ),
-              child:
-                  const Text('Start Session', style: TextStyle(fontSize: 16)),
-            ),
-          ],
+          ),
         ),
+        if (state.isLoading) const LoadingIndicator(),
+      ],
+    );
+  }
+
+  Widget _buildLabel(String label) {
+    return Text(
+      label.toUpperCase(),
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textSecondary,
+        letterSpacing: 0.6,
       ),
     );
   }
