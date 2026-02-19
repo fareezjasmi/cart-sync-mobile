@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
-import 'package:cartsync/utils/secure_storage_service.dart';
+import 'package:cartsync/utils/secure_storage_service.dart' show StorageService;
 
-const String _baseUrl = 'http://172.20.10.11:8080';
+const String _baseUrl = 'http://192.168.100.46:8080';
 
 class AuthInterceptor extends Interceptor {
   final _log = Logger();
@@ -13,7 +13,7 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final token = await SecureStorageService.instance.readData('token');
+    final token = await StorageService.instance.readData('token');
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }

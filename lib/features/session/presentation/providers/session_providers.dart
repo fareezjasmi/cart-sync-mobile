@@ -1,3 +1,4 @@
+import 'package:cartsync/features/session/domain/usecases/get_all_session_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cartsync/features/session/data/models/session_model.dart';
@@ -11,12 +12,14 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
   final Ref ref;
   final CreateSessionUsecase createSessionUsecase;
   final GetSessionUsecase getSessionUsecase;
+  final GetAllSessionUsecase getAllSessionUsecase;
   final UpdateSessionStatusUsecase updateSessionStatusUsecase;
 
   SessionNotifier(
     this.ref,
     this.createSessionUsecase,
     this.getSessionUsecase,
+    this.getAllSessionUsecase,
     this.updateSessionStatusUsecase,
   ) : super(SessionPageInitial());
 
@@ -54,10 +57,8 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
     state = state.copyWith(isLoading: true);
     final result = await getSessionUsecase(sessionId);
     result.fold(
-      (failure) => state =
-          state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
-      (session) => state =
-          state.copyWith(isLoading: false, currentSession: session),
+      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
+      (session) => state = state.copyWith(isLoading: false, currentSession: session),
     );
   }
 
@@ -75,14 +76,27 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
       },
     );
   }
+
+  void updateActiveUser(List<SessionActiveUser> activeUser) {
+    state = state.copyWith(activeUser: activeUser);
+  }
+
+  Future<void> loadAllSessions(String familyId) async {
+    state = state.copyWith(isLoading: true);
+    final result = await getAllSessionUsecase(familyId);
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
+      (session) => state = state.copyWith(isLoading: false, allSession: session),
+    );
+  }
 }
 
-final sessionNotifierProvider =
-    StateNotifierProvider<SessionNotifier, SessionPageModel>((ref) {
+final sessionNotifierProvider = StateNotifierProvider<SessionNotifier, SessionPageModel>((ref) {
   return SessionNotifier(
     ref,
     ref.watch(createSessionUsecaseProvider),
     ref.watch(getSessionUsecaseProvider),
+    ref.watch(getAllSessionUsecaseProvider),
     ref.watch(updateSessionStatusUsecaseProvider),
   );
 });

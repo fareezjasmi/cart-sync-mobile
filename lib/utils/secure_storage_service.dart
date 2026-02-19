@@ -1,26 +1,26 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SecureStorageService {
-  SecureStorageService._();
-  static final SecureStorageService instance = SecureStorageService._();
-
-  final FlutterSecureStorage _storage = const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
+class StorageService {
+  StorageService._();
+  static final StorageService instance = StorageService._();
 
   Future<void> writeData(String key, String value) async {
-    await _storage.write(key: key, value: value);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
   }
 
   Future<String?> readData(String key) async {
-    return _storage.read(key: key);
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(key);
   }
 
   Future<void> deleteData(String key) async {
-    await _storage.delete(key: key);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(key);
   }
 
   Future<void> deleteAll() async {
-    await _storage.deleteAll();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 }

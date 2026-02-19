@@ -30,8 +30,7 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
 
   Future<bool> createItem(String checklistId, String name) async {
     state = state.copyWith(isLoading: true);
-    final item = ItemModel(
-        checklistId: checklistId, name: name, isBought: false);
+    final item = ItemModel(checklistId: checklistId, name: name, isBought: false);
     final result = await createItemUsecase(item);
     return result.fold(
       (failure) {
@@ -50,24 +49,17 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
     state = state.copyWith(isLoading: true);
     final result = await getAllItemsUsecase(checklistId);
     result.fold(
-      (failure) => state =
-          state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
+      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
       (items) => state = state.copyWith(isLoading: false, items: items),
     );
   }
 
   Future<void> toggleBought(ItemModel item) async {
     final result = await updateItemUsecase(item);
-    result.fold(
-      (failure) =>
-          state = state.copyWith(errorMessage: failure.errorMessage),
-      (updated) {
-        final items = state.items
-            .map((i) => i.itemId == updated.itemId ? updated : i)
-            .toList();
-        state = state.copyWith(items: items);
-      },
-    );
+    result.fold((failure) => state = state.copyWith(errorMessage: failure.errorMessage), (updated) {
+      final items = state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList();
+      state = state.copyWith(items: items);
+    });
   }
 
   Future<bool> bulkCreate(List<ItemModel> items) async {
@@ -89,19 +81,43 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
   Future<void> deleteItem(String itemId) async {
     state = state.copyWith(isLoading: true);
     final result = await deleteItemUsecase(itemId);
-    result.fold(
-      (failure) =>
-          state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
-      (_) {
-        final updated = state.items.where((i) => i.itemId != itemId).toList();
-        state = state.copyWith(isLoading: false, items: updated);
-      },
-    );
+    result.fold((failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage), (_) {
+      final updated = state.items.where((i) => i.itemId != itemId).toList();
+      state = state.copyWith(isLoading: false, items: updated);
+    });
+  }
+
+  // Called by WebSocketService when a real-time item event arrives
+  void handleWsEvent(Map<String, dynamic> event) {
+    final type = event['type'] as String?;
+    final rawItem = event['item'] as Map<String, dynamic>?;
+    final deletedItemId = event['itemId'] as String?;
+
+    switch (type) {
+      case 'ITEM_ADDED':
+        if (rawItem != null) {
+          final item = ItemModel.fromJson(rawItem);
+          // Only add if not already in the list (avoid duplicate with HTTP response)
+          final alreadyExists = state.items.any((i) => i.itemId == item.itemId);
+          if (!alreadyExists) {
+            state = state.copyWith(items: [...state.items, item]);
+          }
+        }
+      case 'ITEM_UPDATED':
+      case 'ITEM_BOUGHT':
+        if (rawItem != null) {
+          final updated = ItemModel.fromJson(rawItem);
+          state = state.copyWith(items: state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList());
+        }
+      case 'ITEM_DELETED':
+        if (deletedItemId != null) {
+          state = state.copyWith(items: state.items.where((i) => i.itemId != deletedItemId).toList());
+        }
+    }
   }
 }
 
-final itemNotifierProvider =
-    StateNotifierProvider<ItemNotifier, ItemPageModel>((ref) {
+final itemNotifierProvider = StateNotifierProvider<ItemNotifier, ItemPageModel>((ref) {
   return ItemNotifier(
     ref,
     ref.watch(createItemUsecaseProvider),

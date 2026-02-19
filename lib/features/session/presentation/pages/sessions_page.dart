@@ -22,7 +22,7 @@ class _SessionsPageState extends ConsumerState<SessionsPage> {
   Future<void> _loadCurrentSession() async {
     final sessionId = await ref.read(sessionIdProvider.future);
     if (sessionId != null && sessionId.isNotEmpty) {
-      ref.read(sessionNotifierProvider.notifier).loadSession(sessionId);
+      ref.read(sessionNotifierProvider.notifier).loadAllSessions(sessionId);
     }
   }
 
@@ -63,7 +63,10 @@ class _SessionsPageState extends ConsumerState<SessionsPage> {
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary)),
             const SizedBox(height: 8),
-            _buildSessionCard(context, state.currentSession!),
+            Column(
+              children:   state.allSession!.map((e) => _buildSessionCard(context, e.chatId)).toList()        ,
+            )
+            //_buildSessionCard(context, state.currentSession!);
           ] else ...[
             Center(
               child: Column(

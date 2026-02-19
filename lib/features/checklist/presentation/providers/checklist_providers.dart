@@ -1,3 +1,4 @@
+import 'package:cartsync/features/checklist/domain/usecases/get_all_checklist_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cartsync/features/checklist/data/models/checklist_model.dart';
@@ -13,6 +14,7 @@ class ChecklistNotifier extends StateNotifier<ChecklistPageModel> {
   final GetChecklistUsecase getChecklistUsecase;
   final UpdateChecklistNameUsecase updateChecklistNameUsecase;
   final DeleteChecklistUsecase deleteChecklistUsecase;
+  final GetAllChecklistUsecase getAllChecklistUsecase;
 
   ChecklistNotifier(
     this.ref,
@@ -20,6 +22,7 @@ class ChecklistNotifier extends StateNotifier<ChecklistPageModel> {
     this.getChecklistUsecase,
     this.updateChecklistNameUsecase,
     this.deleteChecklistUsecase,
+    this.getAllChecklistUsecase,
   ) : super(ChecklistPageInitial());
 
   Future<bool> createChecklist(String sessionId, String name) async {
@@ -43,20 +46,26 @@ class ChecklistNotifier extends StateNotifier<ChecklistPageModel> {
     state = state.copyWith(isLoading: true);
     final result = await getChecklistUsecase(checklistId);
     result.fold(
-      (failure) => state =
-          state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
+      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
       (c) => state = state.copyWith(isLoading: false, currentChecklist: c),
+    );
+  }
+
+  Future<void> loadChecklistsBySession(String sessionId) async {
+    state = state.copyWith(isLoading: true);
+    final result = await getAllChecklistUsecase(sessionId);
+    result.fold(
+      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
+      (c) => state = state.copyWith(isLoading: false, checklists: c),
     );
   }
 
   // Since the backend has no "get checklists by session" endpoint,
   // we track checklists locally after creation.
-  void loadChecklistsBySession(String sessionId) {
-    // Checklists are populated when created during this session
-    state = state.copyWith(checklists: state.checklists
-        .where((c) => c.sessionId == sessionId)
-        .toList());
-  }
+  // void loadChecklistsBySession(String sessionId) {
+  //   // Checklists are populated when created during this session
+  //   state = state.copyWith(checklists: state.checklists.where((c) => c.sessionId == sessionId).toList());
+  // }
 
   Future<bool> updateName(String checklistId, String name) async {
     state = state.copyWith(isLoading: true);
@@ -67,9 +76,7 @@ class ChecklistNotifier extends StateNotifier<ChecklistPageModel> {
         return false;
       },
       (c) {
-        final updated = state.checklists
-            .map((x) => x.checklistId == checklistId ? c : x)
-            .toList();
+        final updated = state.checklists.map((x) => x.checklistId == checklistId ? c : x).toList();
         state = state.copyWith(isLoading: false, checklists: updated, currentChecklist: c);
         return true;
       },
@@ -85,9 +92,7 @@ class ChecklistNotifier extends StateNotifier<ChecklistPageModel> {
         return false;
       },
       (_) {
-        final updated = state.checklists
-            .where((c) => c.checklistId != checklistId)
-            .toList();
+        final updated = state.checklists.where((c) => c.checklistId != checklistId).toList();
         state = state.copyWith(isLoading: false, checklists: updated);
         return true;
       },
@@ -95,13 +100,13 @@ class ChecklistNotifier extends StateNotifier<ChecklistPageModel> {
   }
 }
 
-final checklistNotifierProvider =
-    StateNotifierProvider<ChecklistNotifier, ChecklistPageModel>((ref) {
+final checklistNotifierProvider = StateNotifierProvider<ChecklistNotifier, ChecklistPageModel>((ref) {
   return ChecklistNotifier(
     ref,
     ref.watch(createChecklistUsecaseProvider),
     ref.watch(getChecklistUsecaseProvider),
     ref.watch(updateChecklistNameUsecaseProvider),
     ref.watch(deleteChecklistUsecaseProvider),
+    ref.watch(getAllChecklistUsecaseProvider),
   );
 });

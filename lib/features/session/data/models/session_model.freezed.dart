@@ -301,4 +301,270 @@ as String?,
 
 }
 
+
+/// @nodoc
+mixin _$SessionActiveUser {
+
+@JsonKey(name: 'user_id') String? get userId;@JsonKey(name: 'username') String? get username;
+/// Create a copy of SessionActiveUser
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SessionActiveUserCopyWith<SessionActiveUser> get copyWith => _$SessionActiveUserCopyWithImpl<SessionActiveUser>(this as SessionActiveUser, _$identity);
+
+  /// Serializes this SessionActiveUser to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionActiveUser&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.username, username) || other.username == username));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,userId,username);
+
+@override
+String toString() {
+  return 'SessionActiveUser(userId: $userId, username: $username)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SessionActiveUserCopyWith<$Res>  {
+  factory $SessionActiveUserCopyWith(SessionActiveUser value, $Res Function(SessionActiveUser) _then) = _$SessionActiveUserCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'username') String? username
+});
+
+
+
+
+}
+/// @nodoc
+class _$SessionActiveUserCopyWithImpl<$Res>
+    implements $SessionActiveUserCopyWith<$Res> {
+  _$SessionActiveUserCopyWithImpl(this._self, this._then);
+
+  final SessionActiveUser _self;
+  final $Res Function(SessionActiveUser) _then;
+
+/// Create a copy of SessionActiveUser
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = freezed,Object? username = freezed,}) {
+  return _then(_self.copyWith(
+userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [SessionActiveUser].
+extension SessionActiveUserPatterns on SessionActiveUser {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _SessionActiveUser value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _SessionActiveUser() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _SessionActiveUser value)  $default,){
+final _that = this;
+switch (_that) {
+case _SessionActiveUser():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _SessionActiveUser value)?  $default,){
+final _that = this;
+switch (_that) {
+case _SessionActiveUser() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'username')  String? username)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _SessionActiveUser() when $default != null:
+return $default(_that.userId,_that.username);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'username')  String? username)  $default,) {final _that = this;
+switch (_that) {
+case _SessionActiveUser():
+return $default(_that.userId,_that.username);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'username')  String? username)?  $default,) {final _that = this;
+switch (_that) {
+case _SessionActiveUser() when $default != null:
+return $default(_that.userId,_that.username);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _SessionActiveUser implements SessionActiveUser {
+  const _SessionActiveUser({@JsonKey(name: 'user_id') this.userId, @JsonKey(name: 'username') this.username});
+  factory _SessionActiveUser.fromJson(Map<String, dynamic> json) => _$SessionActiveUserFromJson(json);
+
+@override@JsonKey(name: 'user_id') final  String? userId;
+@override@JsonKey(name: 'username') final  String? username;
+
+/// Create a copy of SessionActiveUser
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SessionActiveUserCopyWith<_SessionActiveUser> get copyWith => __$SessionActiveUserCopyWithImpl<_SessionActiveUser>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$SessionActiveUserToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionActiveUser&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.username, username) || other.username == username));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,userId,username);
+
+@override
+String toString() {
+  return 'SessionActiveUser(userId: $userId, username: $username)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SessionActiveUserCopyWith<$Res> implements $SessionActiveUserCopyWith<$Res> {
+  factory _$SessionActiveUserCopyWith(_SessionActiveUser value, $Res Function(_SessionActiveUser) _then) = __$SessionActiveUserCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'username') String? username
+});
+
+
+
+
+}
+/// @nodoc
+class __$SessionActiveUserCopyWithImpl<$Res>
+    implements _$SessionActiveUserCopyWith<$Res> {
+  __$SessionActiveUserCopyWithImpl(this._self, this._then);
+
+  final _SessionActiveUser _self;
+  final $Res Function(_SessionActiveUser) _then;
+
+/// Create a copy of SessionActiveUser
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = freezed,Object? username = freezed,}) {
+  return _then(_SessionActiveUser(
+userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String?,username: freezed == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
 // dart format on

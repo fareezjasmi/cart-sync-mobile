@@ -8,6 +8,7 @@ import 'package:cartsync/service/dio_client.dart';
 abstract class SessionRemoteDatasource {
   Future<SessionModel> createSession(SessionModel session);
   Future<SessionModel> getSession(String sessionId);
+  Future<List<SessionModel>> getAllSession(String familyId);
   Future<SessionModel> updateSessionStatus(String sessionId, String status);
 }
 
@@ -31,6 +32,21 @@ class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
     try {
       final response = await dio.get('/session/$sessionId');
       return SessionModel.fromJson(response.data as Map<String, Object?>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      if (e.response?.statusCode == 404) throw ServerException(message: 'Session not found');
+      throw ServerException(message: e.message);
+    }
+  }
+
+    @override
+  Future<List<SessionModel>> getAllSession(String familyId) async {
+    try {
+      final response = await dio.get('/session/getAll/$familyId');
+      final list = response.data as List;
+      return list
+          .map((e) => SessionModel.fromJson(e as Map<String, Object?>))
+          .toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       if (e.response?.statusCode == 404) throw ServerException(message: 'Session not found');

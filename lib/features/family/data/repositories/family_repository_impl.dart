@@ -56,6 +56,17 @@ class FamilyRepositoryImpl implements FamilyRepository {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to get members'));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<FamilyModel>>> getAllFamily(String userId) async {
+    try {
+      return Right(await datasource.getAllFamily(userId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to get members'));
+    }
+  }
 }
 
 final familyRepositoryProvider = Provider<FamilyRepository>((ref) {

@@ -18,6 +18,15 @@ abstract class SessionModel with _$SessionModel {
     @JsonKey(name: 'end_time') String? endTime,
   }) = _SessionModel;
 
-  factory SessionModel.fromJson(Map<String, Object?> json) =>
-      _$SessionModelFromJson(json);
+  factory SessionModel.fromJson(Map<String, Object?> json) => _$SessionModelFromJson(json);
+}
+
+@freezed
+abstract class SessionActiveUser with _$SessionActiveUser {
+  const factory SessionActiveUser({
+    @JsonKey(name: 'user_id') String? userId,
+    @JsonKey(name: 'username') String? username,
+  }) = _SessionActiveUser;
+
+  factory SessionActiveUser.fromJson(Map<String, Object?> json) => _$SessionActiveUserFromJson(json);
 }

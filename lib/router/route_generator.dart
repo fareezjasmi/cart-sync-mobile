@@ -1,10 +1,11 @@
+import 'package:cartsync/features/family/data/models/family_model.dart';
+import 'package:cartsync/features/family/presentation/pages/family_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cartsync/features/auth/presentation/pages/login_page.dart';
 import 'package:cartsync/features/auth/presentation/pages/register_page.dart';
 import 'package:cartsync/features/checklist/presentation/pages/checklist_detail_page.dart';
 import 'package:cartsync/features/checklist/presentation/pages/create_checklist_page.dart';
 import 'package:cartsync/features/family/presentation/pages/create_family_page.dart';
-import 'package:cartsync/features/family/presentation/pages/family_page.dart';
 import 'package:cartsync/features/item/presentation/pages/create_item_page.dart';
 import 'package:cartsync/features/session/presentation/pages/create_session_page.dart';
 import 'package:cartsync/features/session/presentation/pages/session_detail_page.dart';
@@ -27,6 +28,12 @@ class RouteGenerator {
 
       case '/create-session':
         return MaterialPageRoute(builder: (_) => const CreateSessionPage());
+
+      case '/family-detail':
+        final familyModel = settings.arguments as FamilyModel;
+        return MaterialPageRoute(
+          builder: (_) => FamilyDetailsPage(familyModel: familyModel),
+        );
 
       case '/session-detail':
         final sessionId = settings.arguments as String;

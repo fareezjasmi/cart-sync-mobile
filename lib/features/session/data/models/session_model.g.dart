@@ -33,3 +33,15 @@ Map<String, dynamic> _$SessionModelToJson(_SessionModel instance) =>
       'start_time': instance.startTime,
       'end_time': instance.endTime,
     };
+
+_SessionActiveUser _$SessionActiveUserFromJson(Map<String, dynamic> json) =>
+    _SessionActiveUser(
+      userId: json['user_id'] as String?,
+      username: json['username'] as String?,
+    );
+
+Map<String, dynamic> _$SessionActiveUserToJson(_SessionActiveUser instance) =>
+    <String, dynamic>{
+      'user_id': instance.userId,
+      'username': instance.username,
+    };

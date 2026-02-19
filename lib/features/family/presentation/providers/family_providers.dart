@@ -1,3 +1,4 @@
+import 'package:cartsync/features/family/domain/usecases/get_all_family_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cartsync/features/family/data/models/family_model.dart';
@@ -14,6 +15,7 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
   final GetFamilyUsecase getFamilyUsecase;
   final AddFamilyMemberUsecase addFamilyMemberUsecase;
   final GetFamilyMembersUsecase getFamilyMembersUsecase;
+  final GetAllFamilyUsecase getAllFamilyUsecase;
 
   FamilyNotifier(
     this.ref,
@@ -21,6 +23,7 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
     this.getFamilyUsecase,
     this.addFamilyMemberUsecase,
     this.getFamilyMembersUsecase,
+    this.getAllFamilyUsecase,
   ) : super(FamilyPageInitial());
 
   Future<bool> createFamily(String name, String adminId) async {
@@ -42,13 +45,13 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
     );
   }
 
-  Future<void> loadFamily(String familyId) async {
+  Future<void> loadFamily(String userId) async {
     state = state.copyWith(isLoading: true);
-    final result = await getFamilyUsecase(familyId);
+    final result = await getAllFamilyUsecase(userId);
     result.fold(
       (failure) => state =
           state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
-      (family) => state = state.copyWith(isLoading: false, family: family),
+      (families) => state = state.copyWith(isLoading: false, familyList: families),
     );
   }
 
@@ -87,5 +90,6 @@ final familyNotifierProvider =
     ref.watch(getFamilyUsecaseProvider),
     ref.watch(addFamilyMemberUsecaseProvider),
     ref.watch(getFamilyMembersUsecaseProvider),
+    ref.watch(GetAllFamilyUsecaseProvider),
   );
 });

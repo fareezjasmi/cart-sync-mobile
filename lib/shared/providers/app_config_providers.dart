@@ -1,27 +1,27 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
-import 'package:cartsync/utils/secure_storage_service.dart';
+import 'package:cartsync/utils/secure_storage_service.dart' show StorageService;
 
 // ─── Read providers ───────────────────────────────────────────────────────────
 
 final authTokenProvider = FutureProvider<String?>((ref) async {
-  return SecureStorageService.instance.readData('token');
+  return StorageService.instance.readData('token');
 });
 
 final userIdProvider = FutureProvider<String?>((ref) async {
-  return SecureStorageService.instance.readData('userId');
+  return StorageService.instance.readData('userId');
 });
 
 final usernameProvider = FutureProvider<String?>((ref) async {
-  return SecureStorageService.instance.readData('username');
+  return StorageService.instance.readData('username');
 });
 
 final familyIdProvider = FutureProvider<String?>((ref) async {
-  return SecureStorageService.instance.readData('familyId');
+  return StorageService.instance.readData('familyId');
 });
 
 final sessionIdProvider = FutureProvider<String?>((ref) async {
-  return SecureStorageService.instance.readData('sessionId');
+  return StorageService.instance.readData('sessionId');
 });
 
 // ─── Write providers ──────────────────────────────────────────────────────────
@@ -30,7 +30,7 @@ class _TokenNotifier extends StateNotifier<void> {
   final Ref _ref;
   _TokenNotifier(this._ref) : super(null);
   Future<void> save(String value) async {
-    await SecureStorageService.instance.writeData('token', value);
+    await StorageService.instance.writeData('token', value);
     _ref.invalidate(authTokenProvider);
   }
 }
@@ -43,7 +43,7 @@ class _UserIdNotifier extends StateNotifier<void> {
   final Ref _ref;
   _UserIdNotifier(this._ref) : super(null);
   Future<void> save(String value) async {
-    await SecureStorageService.instance.writeData('userId', value);
+    await StorageService.instance.writeData('userId', value);
     _ref.invalidate(userIdProvider);
   }
 }
@@ -57,7 +57,7 @@ class _UsernameNotifier extends StateNotifier<void> {
   final Ref _ref;
   _UsernameNotifier(this._ref) : super(null);
   Future<void> save(String value) async {
-    await SecureStorageService.instance.writeData('username', value);
+    await StorageService.instance.writeData('username', value);
     _ref.invalidate(usernameProvider);
   }
 }
@@ -71,7 +71,7 @@ class _FamilyIdNotifier extends StateNotifier<void> {
   final Ref _ref;
   _FamilyIdNotifier(this._ref) : super(null);
   Future<void> save(String value) async {
-    await SecureStorageService.instance.writeData('familyId', value);
+    await StorageService.instance.writeData('familyId', value);
     _ref.invalidate(familyIdProvider);
   }
 }
@@ -85,7 +85,7 @@ class _SessionIdNotifier extends StateNotifier<void> {
   final Ref _ref;
   _SessionIdNotifier(this._ref) : super(null);
   Future<void> save(String value) async {
-    await SecureStorageService.instance.writeData('sessionId', value);
+    await StorageService.instance.writeData('sessionId', value);
     _ref.invalidate(sessionIdProvider);
   }
 }
@@ -101,7 +101,7 @@ class _ClearSessionNotifier extends StateNotifier<void> {
   final Ref _ref;
   _ClearSessionNotifier(this._ref) : super(null);
   Future<void> clear() async {
-    await SecureStorageService.instance.deleteAll();
+    await StorageService.instance.deleteAll();
     _ref.invalidate(authTokenProvider);
     _ref.invalidate(userIdProvider);
     _ref.invalidate(usernameProvider);

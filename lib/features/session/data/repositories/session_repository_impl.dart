@@ -43,6 +43,17 @@ class SessionRepositoryImpl implements SessionRepository {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to update status'));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<SessionModel>>> getAllSession(String familyId) async {
+    try {
+      return Right(await datasource.getAllSession(familyId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to update status'));
+    }
+  }
 }
 
 final sessionRepositoryProvider = Provider<SessionRepository>((ref) {

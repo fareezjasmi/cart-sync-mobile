@@ -8,6 +8,7 @@ import 'package:cartsync/service/dio_client.dart';
 abstract class FamilyRemoteDatasource {
   Future<FamilyModel> createFamily(FamilyModel family);
   Future<FamilyModel> getFamily(String familyId);
+  Future<List<FamilyModel>> getAllFamily(String userId);
   Future<FamilyRelationshipModel> addMember(String familyId, String userId);
   // NOTE: GET /family/{id} and GET /family/{familyId} are the same path in the backend.
   // This call uses the same endpoint but expects a List response.
@@ -62,6 +63,20 @@ class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
       final List<dynamic> data = response.data as List<dynamic>;
       return data
           .map((e) => FamilyRelationshipModel.fromJson(e as Map<String, Object?>))
+          .toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+  
+  @override
+  Future<List<FamilyModel>> getAllFamily(String userId) async {
+    try {
+      final response = await dio.get('/family/user/$userId');
+      final List<dynamic> data = response.data as List<dynamic>;
+      return data
+          .map((e) => FamilyModel.fromJson(e as Map<String, Object?>))
           .toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();

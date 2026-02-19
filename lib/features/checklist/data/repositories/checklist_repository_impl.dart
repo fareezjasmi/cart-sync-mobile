@@ -33,8 +33,7 @@ class ChecklistRepositoryImpl implements ChecklistRepository {
   }
 
   @override
-  Future<Either<Failure, ChecklistModel>> updateChecklistName(
-      String checklistId, String name) async {
+  Future<Either<Failure, ChecklistModel>> updateChecklistName(String checklistId, String name) async {
     try {
       return Right(await datasource.updateChecklistName(checklistId, name));
     } on UnauthorizedException {
@@ -53,6 +52,17 @@ class ChecklistRepositoryImpl implements ChecklistRepository {
       return Left(UnauthorizedError());
     } on ServerException catch (e) {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to delete checklist'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ChecklistModel>>> getAllChecklist(String sessionId) async {
+    try {
+      return Right(await datasource.getAllChecklist(sessionId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Checklist not found'));
     }
   }
 }

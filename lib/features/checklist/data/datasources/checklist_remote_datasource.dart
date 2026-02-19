@@ -7,8 +7,8 @@ import 'package:cartsync/service/dio_client.dart';
 
 abstract class ChecklistRemoteDatasource {
   Future<ChecklistModel> createChecklist(ChecklistModel checklist);
-  // NOTE: Backend uses POST /checklist/{id} for GET (backend bug - should be GET)
   Future<ChecklistModel> getChecklist(String checklistId);
+  Future<List<ChecklistModel>> getAllChecklist(String sessionId);
   Future<ChecklistModel> updateChecklistName(String checklistId, String name);
   Future<void> deleteChecklist(String checklistId);
 }
@@ -20,7 +20,10 @@ class ChecklistRemoteDatasourceImpl implements ChecklistRemoteDatasource {
   @override
   Future<ChecklistModel> createChecklist(ChecklistModel checklist) async {
     try {
-      final response = await dio.post('/checklist/create', data: checklist.toJson());
+      final response = await dio.post(
+        '/checklist/create',
+        data: checklist.toJson(),
+      );
       return ChecklistModel.fromJson(response.data as Map<String, Object?>);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
@@ -36,16 +39,26 @@ class ChecklistRemoteDatasourceImpl implements ChecklistRemoteDatasource {
       return ChecklistModel.fromJson(response.data as Map<String, Object?>);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
-      if (e.response?.statusCode == 404) throw ServerException(message: 'Checklist not found');
+      if (e.response?.statusCode == 404)
+        throw ServerException(message: 'Checklist not found');
       throw ServerException(message: e.message);
     }
   }
 
   @override
-  Future<ChecklistModel> updateChecklistName(String checklistId, String name) async {
+  Future<ChecklistModel> updateChecklistName(
+    String checklistId,
+    String name,
+  ) async {
     try {
-      final request = UpdateChecklistNameModel(checklistId: checklistId, checklistName: name);
-      final response = await dio.post('/checklist/updateName', data: request.toJson());
+      final request = UpdateChecklistNameModel(
+        checklistId: checklistId,
+        checklistName: name,
+      );
+      final response = await dio.post(
+        '/checklist/updateName',
+        data: request.toJson(),
+      );
       return ChecklistModel.fromJson(response.data as Map<String, Object?>);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
@@ -62,8 +75,24 @@ class ChecklistRemoteDatasourceImpl implements ChecklistRemoteDatasource {
       throw ServerException(message: e.message);
     }
   }
+
+  @override
+  Future<List<ChecklistModel>> getAllChecklist(String sessionId) async {
+    try {
+      final response = await dio.get('/checklist/getAll/$sessionId');
+      final list = response.data as List;
+      return list
+          .map((e) => ChecklistModel.fromJson(e as Map<String, Object?>))
+          .toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
 }
 
-final checklistRemoteDatasourceProvider = Provider<ChecklistRemoteDatasource>((ref) {
+final checklistRemoteDatasourceProvider = Provider<ChecklistRemoteDatasource>((
+  ref,
+) {
   return ChecklistRemoteDatasourceImpl(ref.watch(dioProvider));
 });
