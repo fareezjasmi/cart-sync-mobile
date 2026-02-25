@@ -38,7 +38,7 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
     String? imageUrl;
     result.fold(
       (failure) => state = state.copyWith(errorMessage: failure.errorMessage),
-      (data) => imageUrl = data['url'] as String?,
+      (data) => imageUrl = data['image_url'] as String?,
     );
     return imageUrl;
   }
@@ -49,6 +49,7 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
     String? imageUrl;
     if (imageFile != null) {
       imageUrl = await _uploadImage(imageFile);
+      print('Saved image url: $imageUrl');
       if (imageUrl == null) {
         state = state.copyWith(isLoading: false);
         return false;

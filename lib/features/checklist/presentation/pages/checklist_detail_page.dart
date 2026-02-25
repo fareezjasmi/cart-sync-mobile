@@ -58,7 +58,8 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
         content: Row(
           children: [
             Container(
-              width: 8, height: 8,
+              width: 8,
+              height: 8,
               decoration: BoxDecoration(color: color, shape: BoxShape.circle),
             ),
             const SizedBox(width: 10),
@@ -109,7 +110,8 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
             actions: [
               IconButton(
                 icon: Container(
-                  width: 34, height: 34,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
@@ -203,40 +205,37 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
         body: checklistState.isLoading && items.isEmpty
             ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
             : items.isEmpty
-                ? _buildEmptyState()
-                : ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-                    children: [
-                      if (checklistState.errorMessage != null || itemState.errorMessage != null)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: AppColors.errorLight,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              checklistState.errorMessage ?? itemState.errorMessage ?? '',
-                              style: TextStyle(color: AppColors.error, fontSize: 13),
-                            ),
-                          ),
+            ? _buildEmptyState()
+            : ListView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                children: [
+                  if (checklistState.errorMessage != null || itemState.errorMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(12)),
+                        child: Text(
+                          checklistState.errorMessage ?? itemState.errorMessage ?? '',
+                          style: TextStyle(color: AppColors.error, fontSize: 13),
                         ),
+                      ),
+                    ),
 
-                      if (remaining.isNotEmpty) ...[
-                        _buildSectionHeader('Remaining', remaining.length),
-                        const SizedBox(height: 8),
-                        _buildItemsCard(remaining, false),
-                        const SizedBox(height: 16),
-                      ],
+                  if (remaining.isNotEmpty) ...[
+                    _buildSectionHeader('Remaining', remaining.length),
+                    const SizedBox(height: 8),
+                    _buildItemsCard(remaining, false),
+                    const SizedBox(height: 16),
+                  ],
 
-                      if (bought.isNotEmpty) ...[
-                        _buildSectionHeader('Bought', bought.length),
-                        const SizedBox(height: 8),
-                        _buildItemsCard(bought, true),
-                      ],
-                    ],
-                  ),
+                  if (bought.isNotEmpty) ...[
+                    _buildSectionHeader('Bought', bought.length),
+                    const SizedBox(height: 8),
+                    _buildItemsCard(bought, true),
+                  ],
+                ],
+              ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(context, '/create-item', arguments: widget.checklistId),
@@ -262,10 +261,7 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
         const SizedBox(width: 6),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-          decoration: BoxDecoration(
-            color: AppColors.primaryXLight,
-            borderRadius: BorderRadius.circular(10),
-          ),
+          decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(10)),
           child: Text(
             '$count',
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary),
@@ -280,9 +276,7 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1))],
       ),
       child: Column(
         children: items.asMap().entries.map((entry) {
@@ -292,7 +286,9 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
           return _ItemRow(
             item: item,
             isLast: isLast,
-            onToggle: () => ref.read(itemNotifierProvider.notifier).toggleBought(item.copyWith(isBought: !(item.isBought ?? false))),
+            onToggle: () => ref
+                .read(itemNotifierProvider.notifier)
+                .toggleBought(item.copyWith(isBought: !(item.isBought ?? false))),
             onDelete: () => _confirmDelete(context, item.itemId!),
           );
         }).toList(),
@@ -306,11 +302,9 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80, height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.primaryXLight,
-              borderRadius: BorderRadius.circular(24),
-            ),
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(24)),
             child: const Center(child: Text('🛍️', style: TextStyle(fontSize: 36))),
           ),
           const SizedBox(height: 16),
@@ -319,19 +313,14 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Tap + to add your first item',
-            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-          ),
+          Text('Tap + to add your first item', style: TextStyle(fontSize: 14, color: AppColors.textSecondary)),
         ],
       ),
     );
   }
 
   void _showRenameDialog(BuildContext context) {
-    final controller = TextEditingController(
-      text: ref.read(checklistNotifierProvider).currentChecklist?.name ?? '',
-    );
+    final controller = TextEditingController(text: ref.read(checklistNotifierProvider).currentChecklist?.name ?? '');
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -353,10 +342,7 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              await ref.read(checklistNotifierProvider.notifier).updateName(
-                    widget.checklistId,
-                    controller.text.trim(),
-                  );
+              await ref.read(checklistNotifierProvider.notifier).updateName(widget.checklistId, controller.text.trim());
             },
             child: const Text('Save'),
           ),
@@ -394,96 +380,185 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
   }
 }
 
-class _ItemRow extends StatelessWidget {
+class _ItemRow extends StatefulWidget {
   final ItemModel item;
   final bool isLast;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
 
-  const _ItemRow({
-    required this.item,
-    required this.isLast,
-    required this.onToggle,
-    required this.onDelete,
-  });
+  const _ItemRow({required this.item, required this.isLast, required this.onToggle, required this.onDelete});
+
+  @override
+  State<_ItemRow> createState() => _ItemRowState();
+}
+
+class _ItemRowState extends State<_ItemRow> {
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
-    final isBought = item.isBought ?? false;
+    final isBought = widget.item.isBought ?? false;
+    final hasImage = widget.item.image != null && widget.item.image!.isNotEmpty;
+
     return Container(
       decoration: BoxDecoration(
-        border: isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFF5F5F5), width: 1)),
+        border: widget.isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFF5F5F5), width: 1)),
       ),
-      child: InkWell(
-        onTap: onToggle,
-        borderRadius: BorderRadius.vertical(
-          bottom: isLast ? const Radius.circular(16) : Radius.zero,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
-          child: Row(
-            children: [
-              // Checkbox
-              GestureDetector(
-                onTap: onToggle,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 22, height: 22,
-                  decoration: BoxDecoration(
-                    color: isBought ? AppColors.primary : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                    border: isBought
-                        ? null
-                        : Border.all(color: const Color(0xFFDEDEDE), width: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InkWell(
+            onTap: widget.onToggle,
+            borderRadius: BorderRadius.vertical(
+              bottom: (widget.isLast && !_isExpanded) ? const Radius.circular(16) : Radius.zero,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+              child: Row(
+                children: [
+                  // Checkbox
+                  GestureDetector(
+                    onTap: widget.onToggle,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        color: isBought ? AppColors.primary : Colors.transparent,
+                        borderRadius: BorderRadius.circular(6),
+                        border: isBought ? null : Border.all(color: const Color(0xFFDEDEDE), width: 2),
+                      ),
+                      child: isBought ? const Icon(Icons.check_rounded, color: Colors.white, size: 14) : null,
+                    ),
                   ),
-                  child: isBought
-                      ? const Icon(Icons.check_rounded, color: Colors.white, size: 14)
-                      : null,
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Icon
-              Container(
-                width: 40, height: 40,
-                decoration: BoxDecoration(
-                  color: isBought ? const Color(0xFFF5F5F5) : AppColors.primaryXLight,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Center(
-                  child: Text(
-                    _getEmoji(item.name ?? ''),
-                    style: TextStyle(fontSize: 20, color: isBought ? null : null),
+                  const SizedBox(width: 12),
+                  // Icon or image thumbnail
+                  GestureDetector(
+                    onTap: hasImage ? () => setState(() => _isExpanded = !_isExpanded) : null,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: isBought ? const Color(0xFFF5F5F5) : AppColors.primaryXLight,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: hasImage
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Image.network(
+                                    widget.item.image!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) => Center(
+                                      child: Text(
+                                        _getEmoji(widget.item.name ?? ''),
+                                        style: const TextStyle(fontSize: 20),
+                                      ),
+                                    ),
+                                  ),
+                                  // Expand indicator badge
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      width: 16,
+                                      height: 16,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withValues(alpha: 0.85),
+                                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(5)),
+                                      ),
+                                      child: Icon(
+                                        _isExpanded ? Icons.expand_less : Icons.expand_more,
+                                        color: Colors.white,
+                                        size: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Center(
+                              child: Text(_getEmoji(widget.item.name ?? ''), style: const TextStyle(fontSize: 20)),
+                            ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Name
-              Expanded(
-                child: Text(
-                  item.name ?? '',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
-                    color: isBought ? AppColors.textSecondary : AppColors.textPrimary,
-                    decoration: isBought ? TextDecoration.lineThrough : null,
-                    decorationColor: AppColors.textSecondary,
+                  const SizedBox(width: 12),
+                  // Name
+                  Expanded(
+                    child: Text(
+                      widget.item.name ?? '',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: isBought ? AppColors.textSecondary : AppColors.textPrimary,
+                        decoration: isBought ? TextDecoration.lineThrough : null,
+                        decorationColor: AppColors.textSecondary,
+                      ),
+                    ),
                   ),
-                ),
+                  // Delete
+                  IconButton(
+                    icon: Icon(Icons.delete_outline_rounded, color: AppColors.error.withValues(alpha: 0.6), size: 20),
+                    onPressed: widget.onDelete,
+                    padding: const EdgeInsets.all(6),
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
-              // Delete
-              IconButton(
-                icon: Icon(
-                  Icons.delete_outline_rounded,
-                  color: AppColors.error.withValues(alpha: 0.6),
-                  size: 20,
-                ),
-                onPressed: onDelete,
-                padding: const EdgeInsets.all(6),
-                constraints: const BoxConstraints(),
-              ),
-            ],
+            ),
           ),
-        ),
+          // Expandable image section
+          AnimatedSize(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: _isExpanded && hasImage
+                ? Container(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        widget.item.image!.replaceAll('gs://', 'https://storage.googleapis.com/'),
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            height: 140,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryXLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 100,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryXLight,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.broken_image_outlined, color: AppColors.primary, size: 32),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Image not available',
+                                style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
@@ -522,13 +597,11 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat(reverse: true);
+    _animation = Tween<double>(
+      begin: 0.4,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -544,7 +617,8 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
       builder: (context2, child2) => Opacity(
         opacity: _animation.value,
         child: Container(
-          width: 7, height: 7,
+          width: 7,
+          height: 7,
           decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/core/errors/exceptions.dart';
 import 'package:cartsync/features/item/data/models/item_model.dart';
@@ -59,7 +60,12 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
     try {
       final response = await dio.get('/items/getAll/$checklistId');
       final List<dynamic> data = response.data as List<dynamic>;
-      return data.map((e) => ItemModel.fromJson(e as Map<String, Object?>)).toList();
+      debugPrint('[getAllItems] raw response: ${response.data}');
+      final items = data.map((e) => ItemModel.fromJson(e as Map<String, Object?>)).toList();
+      for (final item in items) {
+        debugPrint('[getAllItems] item: ${item.name} | image: ${item.image}');
+      }
+      return items;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

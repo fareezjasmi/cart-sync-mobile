@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:cartsync/utils/secure_storage_service.dart' show StorageService;
 
-const String _baseUrl = 'http://192.168.100.47:8080';
+const String _baseUrl = 'http://192.168.100.160:8080';
 
 class AuthInterceptor extends Interceptor {
   final _log = Logger();
@@ -20,7 +20,7 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    _log.d('[DIO RES] ${response.statusCode} ${response.requestOptions.path}');
+    _log.d('[DIO RES] ${response.statusCode} ${response.data}');
     handler.next(response);
   }
 
