@@ -66,10 +66,19 @@ class _ItemsPageState extends ConsumerState<ItemsPage> {
                       ),
                     ),
                     activeColor: AppColors.primary,
-                    secondary: IconButton(
-                      icon: Icon(Icons.delete_outline, color: AppColors.error),
-                      onPressed: () =>
-                          ref.read(itemNotifierProvider.notifier).deleteItem(item.itemId!),
+                    secondary: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit_outlined, color: AppColors.primary),
+                          onPressed: () => Navigator.pushNamed(context, '/update-item', arguments: item),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete_outline, color: AppColors.error),
+                          onPressed: () =>
+                              ref.read(itemNotifierProvider.notifier).deleteItem(item.itemId!),
+                        ),
+                      ],
                     ),
                   ),
                 )),

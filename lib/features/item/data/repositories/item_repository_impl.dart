@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/core/errors/exceptions.dart';
@@ -74,6 +76,17 @@ class ItemRepositoryImpl implements ItemRepository {
       return Left(UnauthorizedError());
     } on ServerException catch (e) {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to delete item'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> uploadItemImage(File file) async {
+    try {
+      return Right(await datasource.uploadItemImage(file));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to upload image item'));
     }
   }
 }

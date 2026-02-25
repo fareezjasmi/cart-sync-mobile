@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cartsync/features/item/data/models/item_model.dart';
@@ -7,6 +9,7 @@ import 'package:cartsync/features/item/domain/usecases/delete_item_usecase.dart'
 import 'package:cartsync/features/item/domain/usecases/get_all_items_usecase.dart';
 import 'package:cartsync/features/item/domain/usecases/get_item_usecase.dart';
 import 'package:cartsync/features/item/domain/usecases/update_item_usecase.dart';
+import 'package:cartsync/features/item/domain/usecases/upload_item_image_usecase.dart';
 import 'package:cartsync/features/item/presentation/models/item_page_model.dart';
 
 class ItemNotifier extends StateNotifier<ItemPageModel> {
@@ -17,6 +20,7 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
   final GetAllItemsUsecase getAllItemsUsecase;
   final BulkCreateItemsUsecase bulkCreateItemsUsecase;
   final DeleteItemUsecase deleteItemUsecase;
+  final UploadItemImageUsecase uploadItemImageUsecase;
 
   ItemNotifier(
     this.ref,
@@ -26,12 +30,34 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
     this.getAllItemsUsecase,
     this.bulkCreateItemsUsecase,
     this.deleteItemUsecase,
+    this.uploadItemImageUsecase,
   ) : super(ItemPageInitial());
 
-  Future<bool> createItem(String checklistId, String name) async {
-    state = state.copyWith(isLoading: true);
-    final item = ItemModel(checklistId: checklistId, name: name, isBought: false);
+  Future<String?> _uploadImage(File imageFile) async {
+    final result = await uploadItemImageUsecase(imageFile);
+    String? imageUrl;
+    result.fold(
+      (failure) => state = state.copyWith(errorMessage: failure.errorMessage),
+      (data) => imageUrl = data['url'] as String?,
+    );
+    return imageUrl;
+  }
+
+  Future<bool> createItem(String checklistId, String name, {File? imageFile}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    String? imageUrl;
+    if (imageFile != null) {
+      imageUrl = await _uploadImage(imageFile);
+      if (imageUrl == null) {
+        state = state.copyWith(isLoading: false);
+        return false;
+      }
+    }
+
+    final item = ItemModel(checklistId: checklistId, name: name, isBought: false, image: imageUrl);
     final result = await createItemUsecase(item);
+
     return result.fold(
       (failure) {
         state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
@@ -40,6 +66,32 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
       (i) {
         final updated = List<ItemModel>.from(state.items)..add(i);
         state = state.copyWith(isLoading: false, items: updated);
+        return true;
+      },
+    );
+  }
+
+  Future<bool> updateItem(ItemModel item, {File? imageFile}) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    String? imageUrl = item.image;
+    if (imageFile != null) {
+      imageUrl = await _uploadImage(imageFile);
+      if (imageUrl == null) {
+        state = state.copyWith(isLoading: false);
+        return false;
+      }
+    }
+
+    final result = await updateItemUsecase(item.copyWith(image: imageUrl));
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
+        return false;
+      },
+      (updated) {
+        final items = state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList();
+        state = state.copyWith(isLoading: false, items: items);
         return true;
       },
     );
@@ -126,5 +178,6 @@ final itemNotifierProvider = StateNotifierProvider<ItemNotifier, ItemPageModel>(
     ref.watch(getAllItemsUsecaseProvider),
     ref.watch(bulkCreateItemsUsecaseProvider),
     ref.watch(deleteItemUsecaseProvider),
+    ref.watch(uploadItemImageUsecaseProvider),
   );
 });

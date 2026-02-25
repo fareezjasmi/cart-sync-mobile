@@ -6,7 +6,9 @@ import 'package:cartsync/features/auth/presentation/pages/register_page.dart';
 import 'package:cartsync/features/checklist/presentation/pages/checklist_detail_page.dart';
 import 'package:cartsync/features/checklist/presentation/pages/create_checklist_page.dart';
 import 'package:cartsync/features/family/presentation/pages/create_family_page.dart';
+import 'package:cartsync/features/item/data/models/item_model.dart';
 import 'package:cartsync/features/item/presentation/pages/create_item_page.dart';
+import 'package:cartsync/features/item/presentation/pages/update_item_page.dart';
 import 'package:cartsync/features/session/presentation/pages/create_session_page.dart';
 import 'package:cartsync/features/session/presentation/pages/session_detail_page.dart';
 import 'package:cartsync/features/main/main_screen.dart';
@@ -57,6 +59,12 @@ class RouteGenerator {
         final checklistId = settings.arguments as String;
         return MaterialPageRoute(
           builder: (_) => CreateItemPage(checklistId: checklistId),
+        );
+
+      case '/update-item':
+        final item = settings.arguments as ItemModel;
+        return MaterialPageRoute(
+          builder: (_) => UpdateItemPage(item: item),
         );
 
       default:

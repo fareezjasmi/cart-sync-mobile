@@ -3,22 +3,30 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cartsync/features/item/data/models/item_model.dart';
 import 'package:cartsync/features/item/presentation/providers/item_providers.dart';
 import 'package:cartsync/shared/widgets/loading_indicator.dart';
 import 'package:cartsync/utils/app_colors.dart';
 
-class CreateItemPage extends ConsumerStatefulWidget {
-  final String checklistId;
-  const CreateItemPage({super.key, required this.checklistId});
+class UpdateItemPage extends ConsumerStatefulWidget {
+  final ItemModel item;
+  const UpdateItemPage({super.key, required this.item});
 
   @override
-  ConsumerState<CreateItemPage> createState() => _CreateItemPageState();
+  ConsumerState<UpdateItemPage> createState() => _UpdateItemPageState();
 }
 
-class _CreateItemPageState extends ConsumerState<CreateItemPage> {
+class _UpdateItemPageState extends ConsumerState<UpdateItemPage> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   File? _selectedImage;
+  bool _imageRemoved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text = widget.item.name ?? '';
+  }
 
   @override
   void dispose() {
@@ -30,15 +38,34 @@ class _CreateItemPageState extends ConsumerState<CreateItemPage> {
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: source, imageQuality: 80);
     if (picked != null) {
-      setState(() => _selectedImage = File(picked.path));
+      setState(() {
+        _selectedImage = File(picked.path);
+        _imageRemoved = false;
+      });
     }
   }
 
-  Future<void> _onCreate() async {
+  void _removeImage() {
+    setState(() {
+      _selectedImage = null;
+      _imageRemoved = true;
+    });
+  }
+
+  Future<void> _onUpdate() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // If user removed the existing image and didn't pick a new one, pass null image
+    final existingImage = _imageRemoved ? null : widget.item.image;
+    final updatedItem = widget.item.copyWith(
+      name: _nameController.text.trim(),
+      image: existingImage,
+    );
+
     final success = await ref
         .read(itemNotifierProvider.notifier)
-        .createItem(widget.checklistId, _nameController.text.trim(), imageFile: _selectedImage);
+        .updateItem(updatedItem, imageFile: _selectedImage);
+
     if (success && mounted) {
       Navigator.pop(context);
     }
@@ -47,11 +74,16 @@ class _CreateItemPageState extends ConsumerState<CreateItemPage> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(itemNotifierProvider);
+
+    // Determine what image to show in the preview
+    final hasNewImage = _selectedImage != null;
+    final hasExistingImage = !_imageRemoved && widget.item.image != null;
+
     return Stack(
       children: [
         Scaffold(
           backgroundColor: AppColors.background,
-          appBar: AppBar(title: const Text('Add Item')),
+          appBar: AppBar(title: const Text('Edit Item')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
             child: Form(
@@ -86,13 +118,13 @@ class _CreateItemPageState extends ConsumerState<CreateItemPage> {
                     autofocus: true,
                     textInputAction: TextInputAction.done,
                     textCapitalization: TextCapitalization.sentences,
-                    onFieldSubmitted: (_) => state.isLoading ? null : _onCreate(),
+                    onFieldSubmitted: (_) => state.isLoading ? null : _onUpdate(),
                     decoration: const InputDecoration(hintText: 'e.g. Broccoli, Milk, Eggs'),
                     validator: (v) => v == null || v.isEmpty ? 'Enter item name' : null,
                   ),
                   const SizedBox(height: 20),
 
-                  // Photo upload area
+                  // Photo section
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -124,7 +156,7 @@ class _CreateItemPageState extends ConsumerState<CreateItemPage> {
                         ),
                         child: Column(
                           children: [
-                            if (_selectedImage != null) ...[
+                            if (hasNewImage) ...[
                               Stack(
                                 alignment: Alignment.topRight,
                                 children: [
@@ -138,7 +170,44 @@ class _CreateItemPageState extends ConsumerState<CreateItemPage> {
                                     ),
                                   ),
                                   GestureDetector(
-                                    onTap: () => setState(() => _selectedImage = null),
+                                    onTap: _removeImage,
+                                    child: Container(
+                                      margin: const EdgeInsets.all(6),
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: const BoxDecoration(
+                                        color: Colors.black54,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(Icons.close, color: Colors.white, size: 16),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                            ] else if (hasExistingImage) ...[
+                              Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(
+                                      widget.item.image!,
+                                      height: 160,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, _, _) => Container(
+                                        height: 160,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                          color: AppColors.primaryXLight,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: const Icon(Icons.broken_image_outlined, color: AppColors.primary, size: 40),
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: _removeImage,
                                     child: Container(
                                       margin: const EdgeInsets.all(6),
                                       padding: const EdgeInsets.all(4),
@@ -205,8 +274,8 @@ class _CreateItemPageState extends ConsumerState<CreateItemPage> {
                   const SizedBox(height: 28),
 
                   ElevatedButton(
-                    onPressed: state.isLoading ? null : _onCreate,
-                    child: const Text('Add to Checklist'),
+                    onPressed: state.isLoading ? null : _onUpdate,
+                    child: const Text('Save Changes'),
                   ),
                 ],
               ),

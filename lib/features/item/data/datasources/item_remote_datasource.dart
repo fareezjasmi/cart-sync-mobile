@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/core/errors/exceptions.dart';
@@ -10,6 +12,7 @@ abstract class ItemRemoteDatasource {
   Future<ItemModel> updateItem(ItemModel item);
   Future<List<ItemModel>> getAllItems(String checklistId);
   Future<List<ItemModel>> createBulkItems(List<ItemModel> items);
+  Future<Map<String, dynamic>> uploadItemImage(File imageFile);
   Future<void> deleteItem(String itemId);
 }
 
@@ -56,9 +59,7 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
     try {
       final response = await dio.get('/items/getAll/$checklistId');
       final List<dynamic> data = response.data as List<dynamic>;
-      return data
-          .map((e) => ItemModel.fromJson(e as Map<String, Object?>))
-          .toList();
+      return data.map((e) => ItemModel.fromJson(e as Map<String, Object?>)).toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);
@@ -68,12 +69,9 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
   @override
   Future<List<ItemModel>> createBulkItems(List<ItemModel> items) async {
     try {
-      final response = await dio.post('/items/createBulk',
-          data: items.map((i) => i.toJson()).toList());
+      final response = await dio.post('/items/createBulk', data: items.map((i) => i.toJson()).toList());
       final List<dynamic> data = response.data as List<dynamic>;
-      return data
-          .map((e) => ItemModel.fromJson(e as Map<String, Object?>))
-          .toList();
+      return data.map((e) => ItemModel.fromJson(e as Map<String, Object?>)).toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);
@@ -84,6 +82,24 @@ class ItemRemoteDatasourceImpl implements ItemRemoteDatasource {
   Future<void> deleteItem(String itemId) async {
     try {
       await dio.delete('/item/delete/$itemId');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> uploadItemImage(File imageFile) async {
+    try {
+      final formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(imageFile.path, filename: imageFile.path.split('/').last),
+      });
+      final response = await dio.post(
+        '/item/upload-image',
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+      return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
-const String _wsBaseUrl = 'ws://192.168.100.46:8080/ws-native';
+const String _wsBaseUrl = 'ws://192.168.100.47:8080/ws-native';
 
 class WebSocketService {
   StompClient? _client;
