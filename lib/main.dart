@@ -6,8 +6,9 @@ import 'package:cartsync/features/main/main_screen.dart';
 import 'package:cartsync/router/route_generator.dart';
 import 'package:cartsync/shared/providers/app_config_providers.dart';
 import 'package:cartsync/utils/app_colors.dart';
+import 'package:cartsync/utils/navigator_key.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+export 'package:cartsync/utils/navigator_key.dart' show navigatorKey;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

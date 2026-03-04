@@ -1,9 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
+import 'package:cartsync/shared/providers/app_config_providers.dart';
+import 'package:cartsync/utils/navigator_key.dart';
 import 'package:cartsync/utils/secure_storage_service.dart' show StorageService;
 
-const String _baseUrl = 'http://192.168.100.160:8080';
+const String _baseUrl = 'http://195.201.17.91';
 
 class AuthInterceptor extends Interceptor {
   final _log = Logger();
@@ -31,7 +33,43 @@ class AuthInterceptor extends Interceptor {
   }
 }
 
-Dio createDio() {
+/// Intercepts 401/403 responses to auto-logout the user, and logs connection
+/// errors so callers can surface them appropriately.
+class AuthErrorInterceptor extends Interceptor {
+  final Future<void> Function() onUnauthorized;
+  final _log = Logger();
+
+  bool _isLoggingOut = false;
+
+  AuthErrorInterceptor({required this.onUnauthorized});
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final statusCode = err.response?.statusCode;
+
+    // Invalid / expired token – auto-logout
+    if ((statusCode == 401 || statusCode == 403) && !_isLoggingOut) {
+      _isLoggingOut = true;
+      _log.w('[AUTH] Token invalid or expired ($statusCode) – logging out');
+      await onUnauthorized();
+      _isLoggingOut = false;
+      handler.reject(err);
+      return;
+    }
+
+    // Connection / timeout errors – log and propagate
+    if (err.type == DioExceptionType.connectionError ||
+        err.type == DioExceptionType.connectionTimeout ||
+        err.type == DioExceptionType.sendTimeout ||
+        err.type == DioExceptionType.receiveTimeout) {
+      _log.w('[NET] Connection error (${err.type}): ${err.message}');
+    }
+
+    handler.next(err);
+  }
+}
+
+Dio createDio({required Future<void> Function() onUnauthorized}) {
   final dio = Dio(
     BaseOptions(
       baseUrl: _baseUrl,
@@ -41,7 +79,15 @@ Dio createDio() {
     ),
   );
   dio.interceptors.add(AuthInterceptor());
+  dio.interceptors.add(AuthErrorInterceptor(onUnauthorized: onUnauthorized));
   return dio;
 }
 
-final dioProvider = Provider<Dio>((ref) => createDio());
+final dioProvider = Provider<Dio>((ref) {
+  Future<void> logout() async {
+    await ref.read(clearSessionProvider.notifier).clear();
+    navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (_) => false);
+  }
+
+  return createDio(onUnauthorized: logout);
+});

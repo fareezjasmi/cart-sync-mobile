@@ -393,24 +393,25 @@ class _ItemRow extends StatefulWidget {
 }
 
 class _ItemRowState extends State<_ItemRow> {
-  bool _isExpanded = false;
+  bool _expanded = false;
+
+  bool get _hasImage => (widget.item.image ?? '').isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
     final isBought = widget.item.isBought ?? false;
-    final hasImage = widget.item.image != null && widget.item.image!.isNotEmpty;
-
     return Container(
       decoration: BoxDecoration(
-        border: widget.isLast ? null : const Border(bottom: BorderSide(color: Color(0xFFF5F5F5), width: 1)),
+        border: widget.isLast && !_expanded
+            ? null
+            : const Border(bottom: BorderSide(color: Color(0xFFF5F5F5), width: 1)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           InkWell(
             onTap: widget.onToggle,
             borderRadius: BorderRadius.vertical(
-              bottom: (widget.isLast && !_isExpanded) ? const Radius.circular(16) : Radius.zero,
+              bottom: widget.isLast && !_expanded ? const Radius.circular(16) : Radius.zero,
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
@@ -432,57 +433,15 @@ class _ItemRowState extends State<_ItemRow> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Icon or image thumbnail
-                  GestureDetector(
-                    onTap: hasImage ? () => setState(() => _isExpanded = !_isExpanded) : null,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isBought ? const Color(0xFFF5F5F5) : AppColors.primaryXLight,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: hasImage
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.network(
-                                    widget.item.image!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) => Center(
-                                      child: Text(
-                                        _getEmoji(widget.item.name ?? ''),
-                                        style: const TextStyle(fontSize: 20),
-                                      ),
-                                    ),
-                                  ),
-                                  // Expand indicator badge
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: Container(
-                                      width: 16,
-                                      height: 16,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary.withValues(alpha: 0.85),
-                                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(5)),
-                                      ),
-                                      child: Icon(
-                                        _isExpanded ? Icons.expand_less : Icons.expand_more,
-                                        color: Colors.white,
-                                        size: 12,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Center(
-                              child: Text(_getEmoji(widget.item.name ?? ''), style: const TextStyle(fontSize: 20)),
-                            ),
+                  // Icon
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: isBought ? const Color(0xFFF5F5F5) : AppColors.primaryXLight,
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    child: Center(child: Text(_getEmoji(widget.item.name ?? ''), style: const TextStyle(fontSize: 20))),
                   ),
                   const SizedBox(width: 12),
                   // Name
@@ -498,6 +457,19 @@ class _ItemRowState extends State<_ItemRow> {
                       ),
                     ),
                   ),
+                  // Expand toggle (only if image exists)
+                  if (_hasImage)
+                    GestureDetector(
+                      onTap: () => setState(() => _expanded = !_expanded),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: AnimatedRotation(
+                          turns: _expanded ? 0.5 : 0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(Icons.keyboard_arrow_down_rounded, size: 20, color: AppColors.textSecondary),
+                        ),
+                      ),
+                    ),
                   // Delete
                   IconButton(
                     icon: Icon(Icons.delete_outline_rounded, color: AppColors.error.withValues(alpha: 0.6), size: 20),
@@ -510,53 +482,45 @@ class _ItemRowState extends State<_ItemRow> {
             ),
           ),
           // Expandable image section
-          AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            child: _isExpanded && hasImage
+          AnimatedCrossFade(
+            firstChild: const SizedBox.shrink(),
+            secondChild: _hasImage
                 ? Container(
+                    width: double.infinity,
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.vertical(
+                        bottom: widget.isLast ? const Radius.circular(16) : Radius.zero,
+                      ),
                       child: Image.network(
-                        widget.item.image!.replaceAll('gs://', 'https://storage.googleapis.com/'),
+                        'https://storage.googleapis.com/${widget.item.image!.replaceAll("gs://", '')}',
+                        height: 180,
                         width: double.infinity,
                         fit: BoxFit.cover,
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return Container(
-                            height: 140,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryXLight,
-                              borderRadius: BorderRadius.circular(12),
+                            height: 180,
+                            color: const Color(0xFFF5F5F5),
+                            child: const Center(
+                              child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
                             ),
-                            child: const CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2),
                           );
                         },
                         errorBuilder: (context, error, stackTrace) => Container(
-                          height: 100,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryXLight,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.broken_image_outlined, color: AppColors.primary, size: 32),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Image not available',
-                                style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                              ),
-                            ],
+                          height: 80,
+                          color: const Color(0xFFF5F5F5),
+                          child: Center(
+                            child: Icon(Icons.broken_image_outlined, color: AppColors.textSecondary, size: 28),
                           ),
                         ),
                       ),
                     ),
                   )
                 : const SizedBox.shrink(),
+            crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 250),
+            sizeCurve: Curves.easeInOut,
           ),
         ],
       ),

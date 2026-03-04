@@ -48,8 +48,7 @@ class _UserIdNotifier extends StateNotifier<void> {
   }
 }
 
-final saveUserIdProvider =
-    StateNotifierProvider<_UserIdNotifier, void>((ref) {
+final saveUserIdProvider = StateNotifierProvider<_UserIdNotifier, void>((ref) {
   return _UserIdNotifier(ref);
 });
 
@@ -62,8 +61,7 @@ class _UsernameNotifier extends StateNotifier<void> {
   }
 }
 
-final saveUsernameProvider =
-    StateNotifierProvider<_UsernameNotifier, void>((ref) {
+final saveUsernameProvider = StateNotifierProvider<_UsernameNotifier, void>((ref) {
   return _UsernameNotifier(ref);
 });
 
@@ -76,8 +74,7 @@ class _FamilyIdNotifier extends StateNotifier<void> {
   }
 }
 
-final saveFamilyIdProvider =
-    StateNotifierProvider<_FamilyIdNotifier, void>((ref) {
+final saveFamilyIdProvider = StateNotifierProvider<_FamilyIdNotifier, void>((ref) {
   return _FamilyIdNotifier(ref);
 });
 
@@ -90,8 +87,7 @@ class _SessionIdNotifier extends StateNotifier<void> {
   }
 }
 
-final saveSessionIdProvider =
-    StateNotifierProvider<_SessionIdNotifier, void>((ref) {
+final saveSessionIdProvider = StateNotifierProvider<_SessionIdNotifier, void>((ref) {
   return _SessionIdNotifier(ref);
 });
 
@@ -110,7 +106,6 @@ class _ClearSessionNotifier extends StateNotifier<void> {
   }
 }
 
-final clearSessionProvider =
-    StateNotifierProvider<_ClearSessionNotifier, void>((ref) {
+final clearSessionProvider = StateNotifierProvider<_ClearSessionNotifier, void>((ref) {
   return _ClearSessionNotifier(ref);
 });
