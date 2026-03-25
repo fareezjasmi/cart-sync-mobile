@@ -1,3 +1,4 @@
+import 'package:cartsync/features/session/presentation/providers/session_providers.dart';
 import 'package:cartsync/shared/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -93,6 +94,9 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
     final total = items.length;
     final boughtCount = bought.length;
     final progress = total > 0 ? boughtCount / total : 0.0;
+    final sessionState = ref.watch(sessionNotifierProvider);
+    final session = sessionState.currentSession;
+    final isInactive = session?.sessionStatus == 'ENDED' || session?.sessionStatus == 'PAUSED';
 
     return Stack(
       children: [
@@ -121,7 +125,7 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
                       ),
                       child: const Icon(Icons.edit_outlined, size: 16),
                     ),
-                    onPressed: () => _showRenameDialog(context),
+                    onPressed: () => isInactive ? null : _showRenameDialog(context),
                   ),
                   const SizedBox(width: 8),
                 ],
@@ -231,24 +235,26 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
                       if (remaining.isNotEmpty) ...[
                         _buildSectionHeader('Remaining', remaining.length),
                         const SizedBox(height: 8),
-                        _buildItemsCard(remaining, false),
+                        _buildItemsCard(remaining, false, isInactive),
                         const SizedBox(height: 16),
                       ],
 
                       if (bought.isNotEmpty) ...[
                         _buildSectionHeader('Bought', bought.length),
                         const SizedBox(height: 8),
-                        _buildItemsCard(bought, true),
+                        _buildItemsCard(bought, true, isInactive),
                       ],
                     ],
                   ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => Navigator.pushNamed(context, '/create-item', arguments: widget.checklistId),
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-          ),
+          floatingActionButton: isInactive
+              ? null
+              : FloatingActionButton(
+                  onPressed: () => Navigator.pushNamed(context, '/create-item', arguments: widget.checklistId),
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
+                ),
         ),
         if (checklistState.isLoading || itemState.isLoading) const LoadingIndicator(),
       ],
@@ -280,7 +286,7 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
     );
   }
 
-  Widget _buildItemsCard(List<ItemModel> items, bool isBought) {
+  Widget _buildItemsCard(List<ItemModel> items, bool isBought, bool isInactive) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -295,10 +301,12 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
           return _ItemRow(
             item: item,
             isLast: isLast,
-            onToggle: () => ref
-                .read(itemNotifierProvider.notifier)
-                .toggleBought(item.copyWith(isBought: !(item.isBought ?? false))),
-            onDelete: () => _confirmDelete(context, item.itemId!),
+            onToggle: () => isInactive
+                ? null
+                : ref
+                      .read(itemNotifierProvider.notifier)
+                      .toggleBought(item.copyWith(isBought: !(item.isBought ?? false))),
+            onDelete: () => isInactive ? null : _confirmDelete(context, item.itemId!),
           );
         }).toList(),
       ),

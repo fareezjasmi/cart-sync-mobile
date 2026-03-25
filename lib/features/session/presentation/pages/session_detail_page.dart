@@ -66,7 +66,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
     final sessionState = ref.watch(sessionNotifierProvider);
     final checklistState = ref.watch(checklistNotifierProvider);
     final session = sessionState.currentSession;
-    final isEnded = session?.sessionStatus == 'ENDED';
+    final isInactive = session?.sessionStatus == 'ENDED' || session?.sessionStatus == 'PAUSED';
 
     return PopScope(
       onPopInvoked: (didPop) {
@@ -102,7 +102,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            if (session != null && !isEnded && widget.isAdmin != null && widget.isAdmin != false)
+            if (session != null && !isInactive && widget.isAdmin != null && widget.isAdmin != false)
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'end') {
@@ -151,7 +151,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
               ),
           ],
         ),
-        floatingActionButton: isEnded
+        floatingActionButton: isInactive
             ? null
             : FloatingActionButton(
                 onPressed: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
@@ -171,7 +171,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                   children: [
                     if (session != null) ...[
-                      if (isEnded) ...[_buildEndedCard(session), const SizedBox(height: 12)],
+                      if (isInactive) ...[_buildEndedCard(session), const SizedBox(height: 12)],
                       _buildActiveUsersCard(sessionState.activeUser ?? []),
                       const SizedBox(height: 20),
                     ],
@@ -183,7 +183,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                         ),
                         const Spacer(),
-                        if (!isEnded)
+                        if (!isInactive)
                           GestureDetector(
                             onTap: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
                             child: const Row(
