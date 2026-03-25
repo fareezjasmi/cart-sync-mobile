@@ -14,7 +14,8 @@ import 'package:image_picker/image_picker.dart';
 
 class SessionDetailPage extends ConsumerStatefulWidget {
   final String sessionId;
-  const SessionDetailPage({super.key, required this.sessionId});
+  final bool? isAdmin;
+  const SessionDetailPage({super.key, required this.sessionId, this.isAdmin = false});
 
   @override
   ConsumerState<SessionDetailPage> createState() => _SessionDetailPageState();
@@ -93,7 +94,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          if (session != null && !isEnded)
+          if (session != null && !isEnded && widget.isAdmin != null && widget.isAdmin != false)
             PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'end') {

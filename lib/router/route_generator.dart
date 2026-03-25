@@ -34,14 +34,12 @@ class RouteGenerator {
 
       case '/family-detail':
         final familyModel = settings.arguments as FamilyModel;
-        return MaterialPageRoute(
-          builder: (_) => FamilyDetailsPage(familyModel: familyModel),
-        );
+        return MaterialPageRoute(builder: (_) => FamilyDetailsPage(familyModel: familyModel));
 
       case '/session-detail':
-        final sessionId = settings.arguments as String;
+        final args = settings.arguments as SessionDetailsPageArgs;
         return MaterialPageRoute(
-          builder: (_) => SessionDetailPage(sessionId: sessionId),
+          builder: (_) => SessionDetailPage(sessionId: args.sessionId, isAdmin: args.isAdmin),
         );
 
       case '/session-history':
@@ -49,30 +47,29 @@ class RouteGenerator {
 
       case '/create-checklist':
         final sessionId = settings.arguments as String;
-        return MaterialPageRoute(
-          builder: (_) => CreateChecklistPage(sessionId: sessionId),
-        );
+        return MaterialPageRoute(builder: (_) => CreateChecklistPage(sessionId: sessionId));
 
       case '/checklist-detail':
         final checklistId = settings.arguments as String;
-        return MaterialPageRoute(
-          builder: (_) => ChecklistDetailPage(checklistId: checklistId),
-        );
+        return MaterialPageRoute(builder: (_) => ChecklistDetailPage(checklistId: checklistId));
 
       case '/create-item':
         final checklistId = settings.arguments as String;
-        return MaterialPageRoute(
-          builder: (_) => CreateItemPage(checklistId: checklistId),
-        );
+        return MaterialPageRoute(builder: (_) => CreateItemPage(checklistId: checklistId));
 
       case '/update-item':
         final item = settings.arguments as ItemModel;
-        return MaterialPageRoute(
-          builder: (_) => UpdateItemPage(item: item),
-        );
+        return MaterialPageRoute(builder: (_) => UpdateItemPage(item: item));
 
       default:
         return MaterialPageRoute(builder: (_) => const LoginPage());
     }
   }
+}
+
+class SessionDetailsPageArgs {
+  final String sessionId;
+  final bool? isAdmin;
+
+  SessionDetailsPageArgs(this.sessionId, this.isAdmin);
 }

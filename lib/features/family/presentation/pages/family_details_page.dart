@@ -1,6 +1,7 @@
 import 'package:cartsync/features/family/data/models/family_model.dart';
 import 'package:cartsync/features/session/data/models/session_model.dart';
 import 'package:cartsync/features/session/presentation/providers/session_providers.dart';
+import 'package:cartsync/router/route_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/shared/providers/app_config_providers.dart';
@@ -50,7 +51,8 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
             actions: [
               IconButton(
                 icon: Container(
-                  width: 34, height: 34,
+                  width: 34,
+                  height: 34,
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(10),
@@ -82,62 +84,70 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
         body: RefreshIndicator(
           onRefresh: _loadSessions,
           color: AppColors.primary,
-          child: Builder(builder: (_) {
-            final sessions = state.allSession;
+          child: Builder(
+            builder: (_) {
+              final sessions = state.allSession;
 
-            if (state.isLoading && (sessions == null || sessions.isEmpty)) {
-              return const Center(child: CircularProgressIndicator(color: AppColors.primary));
-            }
+              if (state.isLoading && (sessions == null || sessions.isEmpty)) {
+                return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+              }
 
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
-              children: [
-                if (state.errorMessage != null) ...[
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(12)),
-                    child: Text(state.errorMessage!, style: TextStyle(color: AppColors.error, fontSize: 13)),
-                  ),
-                  const SizedBox(height: 16),
-                ],
-
-                Row(
-                  children: [
-                    const Text(
-                      'Shopping Sessions',
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+                children: [
+                  if (state.errorMessage != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(12)),
+                      child: Text(state.errorMessage!, style: TextStyle(color: AppColors.error, fontSize: 13)),
                     ),
-                    const Spacer(),
-                    if (sessions != null && sessions.isNotEmpty)
-                      _statusBadge(
-                        '${sessions.where((s) => s.sessionStatus == 'ACTIVE').length} Active',
-                        AppColors.primaryXLight,
-                        AppColors.primary,
-                      ),
+                    const SizedBox(height: 16),
                   ],
-                ),
-                const SizedBox(height: 12),
 
-                if (sessions == null || sessions.isEmpty)
-                  _buildEmptyState()
-                else
-                  ...sessions.map((s) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _SessionCard(
-                      session: s,
-                      onTap: () => Navigator.pushNamed(context, '/session-detail', arguments: s.sessionId),
+                  Row(
+                    children: [
+                      const Text(
+                        'Shopping Sessions',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      ),
+                      const Spacer(),
+                      if (sessions != null && sessions.isNotEmpty)
+                        _statusBadge(
+                          '${sessions.where((s) => s.sessionStatus == 'ACTIVE').length} Active',
+                          AppColors.primaryXLight,
+                          AppColors.primary,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+
+                  if (sessions == null || sessions.isEmpty)
+                    _buildEmptyState()
+                  else
+                    ...sessions.map(
+                      (s) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _SessionCard(
+                          session: s,
+                          onTap: () => Navigator.pushNamed(
+                            context,
+                            '/session-detail',
+                            arguments: SessionDetailsPageArgs(s.sessionId ?? '', widget.familyModel.isAdmin),
+                          ),
+                        ),
+                      ),
                     ),
-                  )),
 
-                const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  onPressed: () => Navigator.pushNamed(context, '/create-session'),
-                  icon: const Icon(Icons.add_rounded, size: 20),
-                  label: const Text('New Session'),
-                ),
-              ],
-            );
-          }),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/create-session'),
+                    icon: const Icon(Icons.add_rounded, size: 20),
+                    label: const Text('New Session'),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -151,10 +161,7 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(
-              color: AppColors.primaryXLight,
-              borderRadius: BorderRadius.circular(24),
-            ),
+            decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(24)),
             child: const Center(child: Text('🛒', style: TextStyle(fontSize: 36))),
           ),
           const SizedBox(height: 16),
@@ -177,7 +184,10 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Text(label, style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w700)),
+      child: Text(
+        label,
+        style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w700),
+      ),
     );
   }
 }
@@ -207,10 +217,7 @@ class _SessionCard extends StatelessWidget {
             Container(
               width: 44,
               height: 44,
-              decoration: BoxDecoration(
-                color: _statusBgColor(status),
-                borderRadius: BorderRadius.circular(14),
-              ),
+              decoration: BoxDecoration(color: _statusBgColor(status), borderRadius: BorderRadius.circular(14)),
               child: Center(child: Text(_statusEmoji(status), style: const TextStyle(fontSize: 20))),
             ),
             const SizedBox(width: 12),
@@ -274,23 +281,32 @@ class _SessionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Text(status, style: TextStyle(color: fg, fontSize: 10, fontWeight: FontWeight.w700)),
+      child: Text(
+        status,
+        style: TextStyle(color: fg, fontSize: 10, fontWeight: FontWeight.w700),
+      ),
     );
   }
 
   Color _statusBgColor(String status) {
     switch (status) {
-      case 'ACTIVE': return AppColors.primaryXLight;
-      case 'PAUSED': return const Color(0xFFFFF8E1);
-      default: return const Color(0xFFF5F5F5);
+      case 'ACTIVE':
+        return AppColors.primaryXLight;
+      case 'PAUSED':
+        return const Color(0xFFFFF8E1);
+      default:
+        return const Color(0xFFF5F5F5);
     }
   }
 
   String _statusEmoji(String status) {
     switch (status) {
-      case 'ACTIVE': return '🛒';
-      case 'PAUSED': return '⏸️';
-      default: return '✅';
+      case 'ACTIVE':
+        return '🛒';
+      case 'PAUSED':
+        return '⏸️';
+      default:
+        return '✅';
     }
   }
 }
