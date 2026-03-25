@@ -78,10 +78,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                     style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
                   ),
                   if (session.location != null && session.location!.isNotEmpty)
-                    Text(
-                      session.location!,
-                      style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 11),
-                    ),
+                    Text(session.location!, style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 11)),
                 ],
               )
             : const Text('Session'),
@@ -167,9 +164,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,13 +265,8 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Center(
-                  child: Icon(Icons.receipt_long_rounded, color: AppColors.textSecondary, size: 32),
-                ),
+                decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(10)),
+                child: const Center(child: Icon(Icons.receipt_long_rounded, color: AppColors.textSecondary, size: 32)),
               ),
             ),
           ),
@@ -307,7 +297,10 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
           children: [
             Icon(icon, color: fg, size: 18),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(color: fg, fontSize: 12, fontWeight: FontWeight.w700)),
+            Text(
+              label,
+              style: TextStyle(color: fg, fontSize: 12, fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ),
@@ -320,9 +313,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,10 +332,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryXLight,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(20)),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -371,10 +359,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                 final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
                 return Container(
                   padding: const EdgeInsets.fromLTRB(5, 5, 12, 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryXLight,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(20)),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -393,19 +378,13 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                       const SizedBox(width: 6),
                       Text(
                         name,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.primary,
-                        ),
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary),
                       ),
                       const SizedBox(width: 6),
                       Container(
-                        width: 6, height: 6,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFF4CAF50),
-                          shape: BoxShape.circle,
-                        ),
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(color: Color(0xFF4CAF50), shape: BoxShape.circle),
                       ),
                     ],
                   ),
@@ -422,9 +401,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1))],
       ),
       child: Column(
         children: checklists.asMap().entries.map((entry) {
@@ -444,10 +421,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
   Widget _buildEmptyChecklists() {
     return Container(
       padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
       child: Column(
         children: [
           const Text('📝', style: TextStyle(fontSize: 36)),
@@ -457,10 +431,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 6),
-          Text(
-            'Tap + to create your first checklist',
-            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-          ),
+          Text('Tap + to create your first checklist', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -502,18 +473,15 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _CloseSessionSheet(
-        sessionId: widget.sessionId,
-        onClosed: () => Navigator.pop(context),
-      ),
+      builder: (_) => _CloseSessionSheet(sessionId: widget.sessionId, onClosed: () => Navigator.pop(context)),
     );
   }
 
   String _formatDate(String iso) {
     try {
       final dt = DateTime.parse(iso).toLocal();
-      final months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      return '${dt.day} ${months[dt.month - 1]} ${dt.year}, ${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}';
+      final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return '${dt.day} ${months[dt.month - 1]} ${dt.year}, ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
     } catch (_) {
       return iso;
     }
@@ -545,10 +513,7 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
 
   Future<void> _submit() async {
     setState(() => _isLoading = true);
-    final success = await ref.read(sessionNotifierProvider.notifier).closeSession(
-      widget.sessionId,
-      receipt: _receipt,
-    );
+    final success = await ref.read(sessionNotifierProvider.notifier).closeSession(widget.sessionId, receipt: _receipt);
     setState(() => _isLoading = false);
 
     if (success && mounted) {
@@ -573,7 +538,8 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
           // Handle
           Center(
             child: Container(
-              width: 36, height: 4,
+              width: 36,
+              height: 4,
               decoration: BoxDecoration(color: const Color(0xFFE0E0E0), borderRadius: BorderRadius.circular(2)),
             ),
           ),
@@ -581,7 +547,8 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
 
           // Icon + title
           Container(
-            width: 52, height: 52,
+            width: 52,
+            height: 52,
             decoration: BoxDecoration(color: const Color(0xFFFFEBEE), borderRadius: BorderRadius.circular(16)),
             child: const Center(child: Icon(Icons.stop_circle_rounded, color: Color(0xFFC62828), size: 28)),
           ),
@@ -601,7 +568,12 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
           // Receipt section
           Text(
             'UPLOAD RECEIPT (OPTIONAL)',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.5),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.5,
+            ),
           ),
           const SizedBox(height: 10),
 
@@ -613,7 +585,8 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
                   child: Image.file(_receipt!, height: 140, width: double.infinity, fit: BoxFit.cover),
                 ),
                 Positioned(
-                  top: 8, right: 8,
+                  top: 8,
+                  right: 8,
                   child: GestureDetector(
                     onTap: () => setState(() => _receipt = null),
                     child: Container(
@@ -628,9 +601,21 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
           else
             Row(
               children: [
-                Expanded(child: _ReceiptPickerBtn(icon: Icons.photo_library_rounded, label: 'Gallery', onTap: () => _pickReceipt(ImageSource.gallery))),
+                Expanded(
+                  child: _ReceiptPickerBtn(
+                    icon: Icons.photo_library_rounded,
+                    label: 'Gallery',
+                    onTap: () => _pickReceipt(ImageSource.gallery),
+                  ),
+                ),
                 const SizedBox(width: 10),
-                Expanded(child: _ReceiptPickerBtn(icon: Icons.camera_alt_rounded, label: 'Camera', onTap: () => _pickReceipt(ImageSource.camera))),
+                Expanded(
+                  child: _ReceiptPickerBtn(
+                    icon: Icons.camera_alt_rounded,
+                    label: 'Camera',
+                    onTap: () => _pickReceipt(ImageSource.camera),
+                  ),
+                ),
               ],
             ),
 
@@ -643,7 +628,8 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
               children: [
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  width: 22, height: 22,
+                  width: 22,
+                  height: 22,
                   decoration: BoxDecoration(
                     color: _confirmed ? const Color(0xFFC62828) : Colors.white,
                     border: Border.all(color: _confirmed ? const Color(0xFFC62828) : const Color(0xFFBDBDBD), width: 2),
@@ -675,7 +661,10 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
                     side: const BorderSide(color: Color(0xFFE0E0E0)),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -690,8 +679,15 @@ class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
                     elevation: 0,
                   ),
                   child: _isLoading
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('End Session', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                      : const Text(
+                          'End Session',
+                          style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white),
+                        ),
                 ),
               ),
             ],
@@ -724,7 +720,10 @@ class _ReceiptPickerBtn extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.textSecondary, size: 22),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+            ),
           ],
         ),
       ),
@@ -757,7 +756,8 @@ class _ChecklistRow extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 40, height: 40,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(12)),
               child: const Center(child: Text('📋', style: TextStyle(fontSize: 18))),
             ),
@@ -791,7 +791,10 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+    _animation = Tween<double>(
+      begin: 0.4,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -807,7 +810,8 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
       builder: (_, __) => Opacity(
         opacity: _animation.value,
         child: Container(
-          width: 7, height: 7,
+          width: 7,
+          height: 7,
           decoration: const BoxDecoration(color: Color(0xFF4CAF50), shape: BoxShape.circle),
         ),
       ),

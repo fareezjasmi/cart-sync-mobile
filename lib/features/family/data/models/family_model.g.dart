@@ -12,6 +12,7 @@ _FamilyModel _$FamilyModelFromJson(Map<String, dynamic> json) => _FamilyModel(
   name: json['name'] as String?,
   dateCreated: json['date_created'] as String?,
   lastUpdated: json['last_updated'] as String?,
+  isAdmin: json['isAdmin'] as bool?,
 );
 
 Map<String, dynamic> _$FamilyModelToJson(_FamilyModel instance) =>
@@ -21,4 +22,5 @@ Map<String, dynamic> _$FamilyModelToJson(_FamilyModel instance) =>
       'name': instance.name,
       'date_created': instance.dateCreated,
       'last_updated': instance.lastUpdated,
+      'isAdmin': instance.isAdmin,
     };

@@ -11,8 +11,8 @@ abstract class FamilyModel with _$FamilyModel {
     String? name,
     @JsonKey(name: 'date_created') String? dateCreated,
     @JsonKey(name: 'last_updated') String? lastUpdated,
+    bool? isAdmin,
   }) = _FamilyModel;
 
-  factory FamilyModel.fromJson(Map<String, Object?> json) =>
-      _$FamilyModelFromJson(json);
+  factory FamilyModel.fromJson(Map<String, Object?> json) => _$FamilyModelFromJson(json);
 }

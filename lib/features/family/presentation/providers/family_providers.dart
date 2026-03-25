@@ -48,19 +48,17 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
   Future<void> loadFamily(String userId) async {
     state = state.copyWith(isLoading: true);
     final result = await getAllFamilyUsecase(userId);
-    result.fold(
-      (failure) => state =
-          state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
-      (families) => state = state.copyWith(isLoading: false, familyList: families),
-    );
+    result.fold((failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage), (families) {
+      final updatedFamilies = families.map((e) => e.copyWith(isAdmin: e.adminId == userId)).toList();
+      state = state.copyWith(isLoading: false, familyList: updatedFamilies);
+    });
   }
 
   Future<void> loadMembers(String familyId) async {
     state = state.copyWith(isLoading: true);
     final result = await getFamilyMembersUsecase(familyId);
     result.fold(
-      (failure) => state =
-          state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
+      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
       (members) => state = state.copyWith(isLoading: false, members: members),
     );
   }
@@ -82,8 +80,7 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
   }
 }
 
-final familyNotifierProvider =
-    StateNotifierProvider<FamilyNotifier, FamilyPageModel>((ref) {
+final familyNotifierProvider = StateNotifierProvider<FamilyNotifier, FamilyPageModel>((ref) {
   return FamilyNotifier(
     ref,
     ref.watch(createFamilyUsecaseProvider),

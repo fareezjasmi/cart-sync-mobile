@@ -8,13 +8,7 @@ class FamilyPageModel {
   final List<FamilyRelationshipModel> members;
   final String? errorMessage;
 
-  FamilyPageModel({
-    this.isLoading = false,
-    this.family,
-    this.familyList,
-    this.members = const [],
-    this.errorMessage,
-  });
+  FamilyPageModel({this.isLoading = false, this.family, this.familyList, this.members = const [], this.errorMessage});
 
   FamilyPageModel copyWith({
     bool? isLoading,

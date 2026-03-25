@@ -217,10 +217,18 @@ class _FamilyCard extends StatelessWidget {
                           style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          'ID: ${family.familyId?.substring(0, 8) ?? '-'}...',
-                          style: TextStyle(color: Colors.white.withValues(alpha: 0.65), fontSize: 12),
-                        ),
+                        if (family.isAdmin ?? false) ...[
+                          Row(
+                            children: [
+                              Icon(Icons.person, color: AppColors.errorLight, size: 14),
+                              SizedBox(width: 4),
+                              Text(
+                                'Admin',
+                                style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w800),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
                     ),
                   ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FamilyModel {
 
-@JsonKey(name: 'family_id') String? get familyId;@JsonKey(name: 'admin_id') String? get adminId; String? get name;@JsonKey(name: 'date_created') String? get dateCreated;@JsonKey(name: 'last_updated') String? get lastUpdated;
+@JsonKey(name: 'family_id') String? get familyId;@JsonKey(name: 'admin_id') String? get adminId; String? get name;@JsonKey(name: 'date_created') String? get dateCreated;@JsonKey(name: 'last_updated') String? get lastUpdated; bool? get isAdmin;
 /// Create a copy of FamilyModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FamilyModelCopyWith<FamilyModel> get copyWith => _$FamilyModelCopyWithImpl<Fami
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FamilyModel&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.adminId, adminId) || other.adminId == adminId)&&(identical(other.name, name) || other.name == name)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FamilyModel&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.adminId, adminId) || other.adminId == adminId)&&(identical(other.name, name) || other.name == name)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,familyId,adminId,name,dateCreated,lastUpdated);
+int get hashCode => Object.hash(runtimeType,familyId,adminId,name,dateCreated,lastUpdated,isAdmin);
 
 @override
 String toString() {
-  return 'FamilyModel(familyId: $familyId, adminId: $adminId, name: $name, dateCreated: $dateCreated, lastUpdated: $lastUpdated)';
+  return 'FamilyModel(familyId: $familyId, adminId: $adminId, name: $name, dateCreated: $dateCreated, lastUpdated: $lastUpdated, isAdmin: $isAdmin)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FamilyModelCopyWith<$Res>  {
   factory $FamilyModelCopyWith(FamilyModel value, $Res Function(FamilyModel) _then) = _$FamilyModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'admin_id') String? adminId, String? name,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'last_updated') String? lastUpdated
+@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'admin_id') String? adminId, String? name,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'last_updated') String? lastUpdated, bool? isAdmin
 });
 
 
@@ -65,14 +65,15 @@ class _$FamilyModelCopyWithImpl<$Res>
 
 /// Create a copy of FamilyModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? familyId = freezed,Object? adminId = freezed,Object? name = freezed,Object? dateCreated = freezed,Object? lastUpdated = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? familyId = freezed,Object? adminId = freezed,Object? name = freezed,Object? dateCreated = freezed,Object? lastUpdated = freezed,Object? isAdmin = freezed,}) {
   return _then(_self.copyWith(
 familyId: freezed == familyId ? _self.familyId : familyId // ignore: cast_nullable_to_non_nullable
 as String?,adminId: freezed == adminId ? _self.adminId : adminId // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,dateCreated: freezed == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
 as String?,lastUpdated: freezed == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isAdmin: freezed == isAdmin ? _self.isAdmin : isAdmin // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'admin_id')  String? adminId,  String? name, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'last_updated')  String? lastUpdated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'admin_id')  String? adminId,  String? name, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'last_updated')  String? lastUpdated,  bool? isAdmin)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FamilyModel() when $default != null:
-return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.lastUpdated);case _:
+return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.lastUpdated,_that.isAdmin);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'admin_id')  String? adminId,  String? name, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'last_updated')  String? lastUpdated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'admin_id')  String? adminId,  String? name, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'last_updated')  String? lastUpdated,  bool? isAdmin)  $default,) {final _that = this;
 switch (_that) {
 case _FamilyModel():
-return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.lastUpdated);case _:
+return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.lastUpdated,_that.isAdmin);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'admin_id')  String? adminId,  String? name, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'last_updated')  String? lastUpdated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'admin_id')  String? adminId,  String? name, @JsonKey(name: 'date_created')  String? dateCreated, @JsonKey(name: 'last_updated')  String? lastUpdated,  bool? isAdmin)?  $default,) {final _that = this;
 switch (_that) {
 case _FamilyModel() when $default != null:
-return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.lastUpdated);case _:
+return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.lastUpdated,_that.isAdmin);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.familyId,_that.adminId,_that.name,_that.dateCreated,_that.
 @JsonSerializable()
 
 class _FamilyModel implements FamilyModel {
-  const _FamilyModel({@JsonKey(name: 'family_id') this.familyId, @JsonKey(name: 'admin_id') this.adminId, this.name, @JsonKey(name: 'date_created') this.dateCreated, @JsonKey(name: 'last_updated') this.lastUpdated});
+  const _FamilyModel({@JsonKey(name: 'family_id') this.familyId, @JsonKey(name: 'admin_id') this.adminId, this.name, @JsonKey(name: 'date_created') this.dateCreated, @JsonKey(name: 'last_updated') this.lastUpdated, this.isAdmin});
   factory _FamilyModel.fromJson(Map<String, dynamic> json) => _$FamilyModelFromJson(json);
 
 @override@JsonKey(name: 'family_id') final  String? familyId;
@@ -221,6 +222,7 @@ class _FamilyModel implements FamilyModel {
 @override final  String? name;
 @override@JsonKey(name: 'date_created') final  String? dateCreated;
 @override@JsonKey(name: 'last_updated') final  String? lastUpdated;
+@override final  bool? isAdmin;
 
 /// Create a copy of FamilyModel
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FamilyModel&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.adminId, adminId) || other.adminId == adminId)&&(identical(other.name, name) || other.name == name)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FamilyModel&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.adminId, adminId) || other.adminId == adminId)&&(identical(other.name, name) || other.name == name)&&(identical(other.dateCreated, dateCreated) || other.dateCreated == dateCreated)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated)&&(identical(other.isAdmin, isAdmin) || other.isAdmin == isAdmin));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,familyId,adminId,name,dateCreated,lastUpdated);
+int get hashCode => Object.hash(runtimeType,familyId,adminId,name,dateCreated,lastUpdated,isAdmin);
 
 @override
 String toString() {
-  return 'FamilyModel(familyId: $familyId, adminId: $adminId, name: $name, dateCreated: $dateCreated, lastUpdated: $lastUpdated)';
+  return 'FamilyModel(familyId: $familyId, adminId: $adminId, name: $name, dateCreated: $dateCreated, lastUpdated: $lastUpdated, isAdmin: $isAdmin)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$FamilyModelCopyWith<$Res> implements $FamilyModelCopyWith
   factory _$FamilyModelCopyWith(_FamilyModel value, $Res Function(_FamilyModel) _then) = __$FamilyModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'admin_id') String? adminId, String? name,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'last_updated') String? lastUpdated
+@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'admin_id') String? adminId, String? name,@JsonKey(name: 'date_created') String? dateCreated,@JsonKey(name: 'last_updated') String? lastUpdated, bool? isAdmin
 });
 
 
@@ -272,14 +274,15 @@ class __$FamilyModelCopyWithImpl<$Res>
 
 /// Create a copy of FamilyModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? familyId = freezed,Object? adminId = freezed,Object? name = freezed,Object? dateCreated = freezed,Object? lastUpdated = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? familyId = freezed,Object? adminId = freezed,Object? name = freezed,Object? dateCreated = freezed,Object? lastUpdated = freezed,Object? isAdmin = freezed,}) {
   return _then(_FamilyModel(
 familyId: freezed == familyId ? _self.familyId : familyId // ignore: cast_nullable_to_non_nullable
 as String?,adminId: freezed == adminId ? _self.adminId : adminId // ignore: cast_nullable_to_non_nullable
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,dateCreated: freezed == dateCreated ? _self.dateCreated : dateCreated // ignore: cast_nullable_to_non_nullable
 as String?,lastUpdated: freezed == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isAdmin: freezed == isAdmin ? _self.isAdmin : isAdmin // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 
