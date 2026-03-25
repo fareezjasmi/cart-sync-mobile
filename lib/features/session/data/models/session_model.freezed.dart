@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SessionModel {
 
-@JsonKey(name: 'session_id') String? get sessionId;@JsonKey(name: 'family_id') String? get familyId;@JsonKey(name: 'chat_id') String? get chatId; String? get name; String? get location; String? get timestamp;@JsonKey(name: 'session_status') String? get sessionStatus;@JsonKey(name: 'shopper_user_id') String? get shopperUserId;@JsonKey(name: 'start_time') String? get startTime;@JsonKey(name: 'end_time') String? get endTime;
+@JsonKey(name: 'session_id') String? get sessionId;@JsonKey(name: 'family_id') String? get familyId;@JsonKey(name: 'chat_id') String? get chatId; String? get name; String? get location; String? get timestamp;@JsonKey(name: 'session_status') String? get sessionStatus;@JsonKey(name: 'shopper_user_id') String? get shopperUserId;@JsonKey(name: 'start_time') String? get startTime;@JsonKey(name: 'end_time') String? get endTime;@JsonKey(name: 'receipt_url') String? get receiptUrl;
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SessionModelCopyWith<SessionModel> get copyWith => _$SessionModelCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionModel&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.sessionStatus, sessionStatus) || other.sessionStatus == sessionStatus)&&(identical(other.shopperUserId, shopperUserId) || other.shopperUserId == shopperUserId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SessionModel&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.sessionStatus, sessionStatus) || other.sessionStatus == sessionStatus)&&(identical(other.shopperUserId, shopperUserId) || other.shopperUserId == shopperUserId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.receiptUrl, receiptUrl) || other.receiptUrl == receiptUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,sessionId,familyId,chatId,name,location,timestamp,sessionStatus,shopperUserId,startTime,endTime);
+int get hashCode => Object.hash(runtimeType,sessionId,familyId,chatId,name,location,timestamp,sessionStatus,shopperUserId,startTime,endTime,receiptUrl);
 
 @override
 String toString() {
-  return 'SessionModel(sessionId: $sessionId, familyId: $familyId, chatId: $chatId, name: $name, location: $location, timestamp: $timestamp, sessionStatus: $sessionStatus, shopperUserId: $shopperUserId, startTime: $startTime, endTime: $endTime)';
+  return 'SessionModel(sessionId: $sessionId, familyId: $familyId, chatId: $chatId, name: $name, location: $location, timestamp: $timestamp, sessionStatus: $sessionStatus, shopperUserId: $shopperUserId, startTime: $startTime, endTime: $endTime, receiptUrl: $receiptUrl)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SessionModelCopyWith<$Res>  {
   factory $SessionModelCopyWith(SessionModel value, $Res Function(SessionModel) _then) = _$SessionModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'session_id') String? sessionId,@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'chat_id') String? chatId, String? name, String? location, String? timestamp,@JsonKey(name: 'session_status') String? sessionStatus,@JsonKey(name: 'shopper_user_id') String? shopperUserId,@JsonKey(name: 'start_time') String? startTime,@JsonKey(name: 'end_time') String? endTime
+@JsonKey(name: 'session_id') String? sessionId,@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'chat_id') String? chatId, String? name, String? location, String? timestamp,@JsonKey(name: 'session_status') String? sessionStatus,@JsonKey(name: 'shopper_user_id') String? shopperUserId,@JsonKey(name: 'start_time') String? startTime,@JsonKey(name: 'end_time') String? endTime,@JsonKey(name: 'receipt_url') String? receiptUrl
 });
 
 
@@ -65,7 +65,7 @@ class _$SessionModelCopyWithImpl<$Res>
 
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? sessionId = freezed,Object? familyId = freezed,Object? chatId = freezed,Object? name = freezed,Object? location = freezed,Object? timestamp = freezed,Object? sessionStatus = freezed,Object? shopperUserId = freezed,Object? startTime = freezed,Object? endTime = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? sessionId = freezed,Object? familyId = freezed,Object? chatId = freezed,Object? name = freezed,Object? location = freezed,Object? timestamp = freezed,Object? sessionStatus = freezed,Object? shopperUserId = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? receiptUrl = freezed,}) {
   return _then(_self.copyWith(
 sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as String?,familyId: freezed == familyId ? _self.familyId : familyId // ignore: cast_nullable_to_non_nullable
@@ -77,6 +77,7 @@ as String?,sessionStatus: freezed == sessionStatus ? _self.sessionStatus : sessi
 as String?,shopperUserId: freezed == shopperUserId ? _self.shopperUserId : shopperUserId // ignore: cast_nullable_to_non_nullable
 as String?,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as String?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
+as String?,receiptUrl: freezed == receiptUrl ? _self.receiptUrl : receiptUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'session_id')  String? sessionId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'chat_id')  String? chatId,  String? name,  String? location,  String? timestamp, @JsonKey(name: 'session_status')  String? sessionStatus, @JsonKey(name: 'shopper_user_id')  String? shopperUserId, @JsonKey(name: 'start_time')  String? startTime, @JsonKey(name: 'end_time')  String? endTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'session_id')  String? sessionId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'chat_id')  String? chatId,  String? name,  String? location,  String? timestamp, @JsonKey(name: 'session_status')  String? sessionStatus, @JsonKey(name: 'shopper_user_id')  String? shopperUserId, @JsonKey(name: 'start_time')  String? startTime, @JsonKey(name: 'end_time')  String? endTime, @JsonKey(name: 'receipt_url')  String? receiptUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SessionModel() when $default != null:
-return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.location,_that.timestamp,_that.sessionStatus,_that.shopperUserId,_that.startTime,_that.endTime);case _:
+return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.location,_that.timestamp,_that.sessionStatus,_that.shopperUserId,_that.startTime,_that.endTime,_that.receiptUrl);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.loc
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'session_id')  String? sessionId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'chat_id')  String? chatId,  String? name,  String? location,  String? timestamp, @JsonKey(name: 'session_status')  String? sessionStatus, @JsonKey(name: 'shopper_user_id')  String? shopperUserId, @JsonKey(name: 'start_time')  String? startTime, @JsonKey(name: 'end_time')  String? endTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'session_id')  String? sessionId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'chat_id')  String? chatId,  String? name,  String? location,  String? timestamp, @JsonKey(name: 'session_status')  String? sessionStatus, @JsonKey(name: 'shopper_user_id')  String? shopperUserId, @JsonKey(name: 'start_time')  String? startTime, @JsonKey(name: 'end_time')  String? endTime, @JsonKey(name: 'receipt_url')  String? receiptUrl)  $default,) {final _that = this;
 switch (_that) {
 case _SessionModel():
-return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.location,_that.timestamp,_that.sessionStatus,_that.shopperUserId,_that.startTime,_that.endTime);case _:
+return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.location,_that.timestamp,_that.sessionStatus,_that.shopperUserId,_that.startTime,_that.endTime,_that.receiptUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.loc
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'session_id')  String? sessionId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'chat_id')  String? chatId,  String? name,  String? location,  String? timestamp, @JsonKey(name: 'session_status')  String? sessionStatus, @JsonKey(name: 'shopper_user_id')  String? shopperUserId, @JsonKey(name: 'start_time')  String? startTime, @JsonKey(name: 'end_time')  String? endTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'session_id')  String? sessionId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'chat_id')  String? chatId,  String? name,  String? location,  String? timestamp, @JsonKey(name: 'session_status')  String? sessionStatus, @JsonKey(name: 'shopper_user_id')  String? shopperUserId, @JsonKey(name: 'start_time')  String? startTime, @JsonKey(name: 'end_time')  String? endTime, @JsonKey(name: 'receipt_url')  String? receiptUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _SessionModel() when $default != null:
-return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.location,_that.timestamp,_that.sessionStatus,_that.shopperUserId,_that.startTime,_that.endTime);case _:
+return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.location,_that.timestamp,_that.sessionStatus,_that.shopperUserId,_that.startTime,_that.endTime,_that.receiptUrl);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.sessionId,_that.familyId,_that.chatId,_that.name,_that.loc
 @JsonSerializable()
 
 class _SessionModel implements SessionModel {
-  const _SessionModel({@JsonKey(name: 'session_id') this.sessionId, @JsonKey(name: 'family_id') this.familyId, @JsonKey(name: 'chat_id') this.chatId, this.name, this.location, this.timestamp, @JsonKey(name: 'session_status') this.sessionStatus, @JsonKey(name: 'shopper_user_id') this.shopperUserId, @JsonKey(name: 'start_time') this.startTime, @JsonKey(name: 'end_time') this.endTime});
+  const _SessionModel({@JsonKey(name: 'session_id') this.sessionId, @JsonKey(name: 'family_id') this.familyId, @JsonKey(name: 'chat_id') this.chatId, this.name, this.location, this.timestamp, @JsonKey(name: 'session_status') this.sessionStatus, @JsonKey(name: 'shopper_user_id') this.shopperUserId, @JsonKey(name: 'start_time') this.startTime, @JsonKey(name: 'end_time') this.endTime, @JsonKey(name: 'receipt_url') this.receiptUrl});
   factory _SessionModel.fromJson(Map<String, dynamic> json) => _$SessionModelFromJson(json);
 
 @override@JsonKey(name: 'session_id') final  String? sessionId;
@@ -231,6 +232,7 @@ class _SessionModel implements SessionModel {
 @override@JsonKey(name: 'shopper_user_id') final  String? shopperUserId;
 @override@JsonKey(name: 'start_time') final  String? startTime;
 @override@JsonKey(name: 'end_time') final  String? endTime;
+@override@JsonKey(name: 'receipt_url') final  String? receiptUrl;
 
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionModel&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.sessionStatus, sessionStatus) || other.sessionStatus == sessionStatus)&&(identical(other.shopperUserId, shopperUserId) || other.shopperUserId == shopperUserId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SessionModel&&(identical(other.sessionId, sessionId) || other.sessionId == sessionId)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.chatId, chatId) || other.chatId == chatId)&&(identical(other.name, name) || other.name == name)&&(identical(other.location, location) || other.location == location)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.sessionStatus, sessionStatus) || other.sessionStatus == sessionStatus)&&(identical(other.shopperUserId, shopperUserId) || other.shopperUserId == shopperUserId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.receiptUrl, receiptUrl) || other.receiptUrl == receiptUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,sessionId,familyId,chatId,name,location,timestamp,sessionStatus,shopperUserId,startTime,endTime);
+int get hashCode => Object.hash(runtimeType,sessionId,familyId,chatId,name,location,timestamp,sessionStatus,shopperUserId,startTime,endTime,receiptUrl);
 
 @override
 String toString() {
-  return 'SessionModel(sessionId: $sessionId, familyId: $familyId, chatId: $chatId, name: $name, location: $location, timestamp: $timestamp, sessionStatus: $sessionStatus, shopperUserId: $shopperUserId, startTime: $startTime, endTime: $endTime)';
+  return 'SessionModel(sessionId: $sessionId, familyId: $familyId, chatId: $chatId, name: $name, location: $location, timestamp: $timestamp, sessionStatus: $sessionStatus, shopperUserId: $shopperUserId, startTime: $startTime, endTime: $endTime, receiptUrl: $receiptUrl)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$SessionModelCopyWith<$Res> implements $SessionModelCopyWi
   factory _$SessionModelCopyWith(_SessionModel value, $Res Function(_SessionModel) _then) = __$SessionModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'session_id') String? sessionId,@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'chat_id') String? chatId, String? name, String? location, String? timestamp,@JsonKey(name: 'session_status') String? sessionStatus,@JsonKey(name: 'shopper_user_id') String? shopperUserId,@JsonKey(name: 'start_time') String? startTime,@JsonKey(name: 'end_time') String? endTime
+@JsonKey(name: 'session_id') String? sessionId,@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'chat_id') String? chatId, String? name, String? location, String? timestamp,@JsonKey(name: 'session_status') String? sessionStatus,@JsonKey(name: 'shopper_user_id') String? shopperUserId,@JsonKey(name: 'start_time') String? startTime,@JsonKey(name: 'end_time') String? endTime,@JsonKey(name: 'receipt_url') String? receiptUrl
 });
 
 
@@ -282,7 +284,7 @@ class __$SessionModelCopyWithImpl<$Res>
 
 /// Create a copy of SessionModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? sessionId = freezed,Object? familyId = freezed,Object? chatId = freezed,Object? name = freezed,Object? location = freezed,Object? timestamp = freezed,Object? sessionStatus = freezed,Object? shopperUserId = freezed,Object? startTime = freezed,Object? endTime = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? sessionId = freezed,Object? familyId = freezed,Object? chatId = freezed,Object? name = freezed,Object? location = freezed,Object? timestamp = freezed,Object? sessionStatus = freezed,Object? shopperUserId = freezed,Object? startTime = freezed,Object? endTime = freezed,Object? receiptUrl = freezed,}) {
   return _then(_SessionModel(
 sessionId: freezed == sessionId ? _self.sessionId : sessionId // ignore: cast_nullable_to_non_nullable
 as String?,familyId: freezed == familyId ? _self.familyId : familyId // ignore: cast_nullable_to_non_nullable
@@ -294,6 +296,7 @@ as String?,sessionStatus: freezed == sessionStatus ? _self.sessionStatus : sessi
 as String?,shopperUserId: freezed == shopperUserId ? _self.shopperUserId : shopperUserId // ignore: cast_nullable_to_non_nullable
 as String?,startTime: freezed == startTime ? _self.startTime : startTime // ignore: cast_nullable_to_non_nullable
 as String?,endTime: freezed == endTime ? _self.endTime : endTime // ignore: cast_nullable_to_non_nullable
+as String?,receiptUrl: freezed == receiptUrl ? _self.receiptUrl : receiptUrl // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

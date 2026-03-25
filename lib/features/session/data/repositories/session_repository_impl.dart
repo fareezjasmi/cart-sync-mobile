@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/core/errors/exceptions.dart';
@@ -51,7 +53,18 @@ class SessionRepositoryImpl implements SessionRepository {
     } on UnauthorizedException {
       return Left(UnauthorizedError());
     } on ServerException catch (e) {
-      return Left(ServerError(errorMessage: e.message ?? 'Failed to update status'));
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to get sessions'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> uploadReceipt(String sessionId, File receiptFile) async {
+    try {
+      return Right(await datasource.uploadReceipt(sessionId, receiptFile));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to upload receipt'));
     }
   }
 }

@@ -46,12 +46,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             children: [
               Center(
                 child: Container(
-                  width: 36, height: 4,
+                  width: 36,
+                  height: 4,
                   margin: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  decoration: BoxDecoration(color: const Color(0xFFE0E0E0), borderRadius: BorderRadius.circular(2)),
                 ),
               ),
               const Text(
@@ -174,7 +172,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           iconColor: AppColors.primary,
                           title: 'Shopping Stats',
                           subtitle: 'View your activity history',
-                          onTap: () {},
+                          onTap: () => Navigator.pushNamed(context, '/session-history'),
                         ),
                       ]),
                       const SizedBox(height: 20),
@@ -251,11 +249,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     backgroundColor: AppColors.primaryLight.withValues(alpha: 0.5),
                     child: Text(
                       initials,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800),
                     ),
                   ),
                   Positioned(
@@ -264,7 +258,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                     child: GestureDetector(
                       onTap: () => _showEditProfileSheet(context, displayName),
                       child: Container(
-                        width: 28, height: 28,
+                        width: 28,
+                        height: 28,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.circle,
@@ -289,10 +284,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               const SizedBox(height: 4),
               Text(
                 username.isNotEmpty ? '@$username' : '',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.65),
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.65), fontSize: 14),
               ),
             ],
           ),
@@ -318,9 +310,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 1))],
       ),
       child: Column(children: children),
     );
@@ -352,7 +342,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         child: Row(
           children: [
             Container(
-              width: 36, height: 36,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(color: iconBg, borderRadius: BorderRadius.circular(10)),
               child: Icon(icon, color: iconColor, size: 18),
             ),
@@ -384,7 +375,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   Widget _buildToggle(bool isOn) {
     return Container(
-      width: 44, height: 26,
+      width: 44,
+      height: 26,
       decoration: BoxDecoration(
         color: isOn ? AppColors.primary : const Color(0xFFBDBDBD),
         borderRadius: BorderRadius.circular(13),
@@ -394,7 +386,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         child: Padding(
           padding: const EdgeInsets.all(2),
           child: Container(
-            width: 22, height: 22,
+            width: 22,
+            height: 22,
             decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
           ),
         ),

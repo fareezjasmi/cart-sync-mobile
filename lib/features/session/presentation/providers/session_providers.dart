@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cartsync/features/session/domain/usecases/get_all_session_usecase.dart';
+import 'package:cartsync/features/session/domain/usecases/upload_receipt_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cartsync/features/session/data/models/session_model.dart';
@@ -14,6 +17,7 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
   final GetSessionUsecase getSessionUsecase;
   final GetAllSessionUsecase getAllSessionUsecase;
   final UpdateSessionStatusUsecase updateSessionStatusUsecase;
+  final UploadReceiptUsecase uploadReceiptUsecase;
 
   SessionNotifier(
     this.ref,
@@ -21,6 +25,7 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
     this.getSessionUsecase,
     this.getAllSessionUsecase,
     this.updateSessionStatusUsecase,
+    this.uploadReceiptUsecase,
   ) : super(SessionPageInitial());
 
   Future<bool> createSession({
@@ -89,6 +94,34 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
       (session) => state = state.copyWith(isLoading: false, allSession: session),
     );
   }
+
+  /// Ends the session and optionally uploads a receipt image.
+  /// Returns true on success.
+  Future<bool> closeSession(String sessionId, {File? receipt}) async {
+    state = state.copyWith(isLoading: true);
+
+    // Upload receipt first if provided
+    if (receipt != null) {
+      final uploadResult = await uploadReceiptUsecase(sessionId, receipt);
+      if (uploadResult.isLeft()) {
+        final failure = uploadResult.fold((f) => f, (_) => null);
+        state = state.copyWith(isLoading: false, errorMessage: failure?.errorMessage);
+        return false;
+      }
+    }
+
+    final result = await updateSessionStatusUsecase(sessionId, 'ENDED');
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
+        return false;
+      },
+      (session) {
+        state = state.copyWith(isLoading: false, currentSession: session);
+        return true;
+      },
+    );
+  }
 }
 
 final sessionNotifierProvider = StateNotifierProvider<SessionNotifier, SessionPageModel>((ref) {
@@ -98,5 +131,6 @@ final sessionNotifierProvider = StateNotifierProvider<SessionNotifier, SessionPa
     ref.watch(getSessionUsecaseProvider),
     ref.watch(getAllSessionUsecaseProvider),
     ref.watch(updateSessionStatusUsecaseProvider),
+    ref.watch(uploadReceiptUsecaseProvider),
   );
 });

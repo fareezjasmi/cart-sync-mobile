@@ -11,6 +11,7 @@ import 'package:cartsync/features/item/presentation/pages/create_item_page.dart'
 import 'package:cartsync/features/item/presentation/pages/update_item_page.dart';
 import 'package:cartsync/features/session/presentation/pages/create_session_page.dart';
 import 'package:cartsync/features/session/presentation/pages/session_detail_page.dart';
+import 'package:cartsync/features/session/presentation/pages/session_history_page.dart';
 import 'package:cartsync/features/main/main_screen.dart';
 
 class RouteGenerator {
@@ -42,6 +43,9 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => SessionDetailPage(sessionId: sessionId),
         );
+
+      case '/session-history':
+        return MaterialPageRoute(builder: (_) => const SessionHistoryPage());
 
       case '/create-checklist':
         final sessionId = settings.arguments as String;

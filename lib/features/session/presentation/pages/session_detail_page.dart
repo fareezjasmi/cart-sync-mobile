@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cartsync/features/checklist/data/models/checklist_model.dart';
 import 'package:cartsync/features/item/presentation/providers/item_providers.dart';
 import 'package:cartsync/features/session/data/models/session_model.dart';
@@ -8,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/features/checklist/presentation/providers/checklist_providers.dart';
 import 'package:cartsync/features/session/presentation/providers/session_providers.dart';
 import 'package:cartsync/utils/app_colors.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SessionDetailPage extends ConsumerStatefulWidget {
   final String sessionId;
@@ -61,6 +64,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
     final sessionState = ref.watch(sessionNotifierProvider);
     final checklistState = ref.watch(checklistNotifierProvider);
     final session = sessionState.currentSession;
+    final isEnded = session?.sessionStatus == 'ENDED';
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -86,12 +90,14 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
-        backgroundColor: AppColors.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-      ),
+      floatingActionButton: isEnded
+          ? null
+          : FloatingActionButton(
+              onPressed: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
+            ),
       body: sessionState.isLoading && session == null
           ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
           : RefreshIndicator(
@@ -117,19 +123,20 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                       ),
                       const Spacer(),
-                      GestureDetector(
-                        onTap: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
-                        child: const Row(
-                          children: [
-                            Icon(Icons.add_rounded, color: AppColors.primary, size: 18),
-                            SizedBox(width: 2),
-                            Text(
-                              'Add',
-                              style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600),
-                            ),
-                          ],
+                      if (!isEnded)
+                        GestureDetector(
+                          onTap: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.add_rounded, color: AppColors.primary, size: 18),
+                              SizedBox(width: 2),
+                              Text(
+                                'Add',
+                                style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -153,6 +160,8 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
 
   Widget _buildStatusCard(SessionModel session) {
     final status = session.sessionStatus ?? 'ACTIVE';
+    final isEnded = status == 'ENDED';
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -181,44 +190,98 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
             ],
           ),
           const SizedBox(height: 14),
+          if (isEnded)
+            _buildEndedInfo(session)
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: _buildStatusBtn(
+                    label: 'Pause',
+                    icon: Icons.pause_rounded,
+                    bg: const Color(0xFFFFF8E1),
+                    fg: const Color(0xFFE65100),
+                    onTap: () => _updateStatus('PAUSED'),
+                    isActive: status == 'PAUSED',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatusBtn(
+                    label: 'Resume',
+                    icon: Icons.play_arrow_rounded,
+                    bg: AppColors.primaryXLight,
+                    fg: AppColors.primary,
+                    onTap: () => _updateStatus('ACTIVE'),
+                    isActive: status == 'ACTIVE',
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildStatusBtn(
+                    label: 'End',
+                    icon: Icons.stop_rounded,
+                    bg: const Color(0xFFFFEBEE),
+                    fg: const Color(0xFFC62828),
+                    onTap: _showCloseSessionSheet,
+                    isActive: false,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEndedInfo(SessionModel session) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (session.endTime != null)
           Row(
             children: [
-              Expanded(
-                child: _buildStatusBtn(
-                  label: 'Pause',
-                  icon: Icons.pause_rounded,
-                  bg: const Color(0xFFFFF8E1),
-                  fg: const Color(0xFFE65100),
-                  onTap: () => _updateStatus('PAUSED'),
-                  isActive: status == 'PAUSED',
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatusBtn(
-                  label: 'Resume',
-                  icon: Icons.play_arrow_rounded,
-                  bg: AppColors.primaryXLight,
-                  fg: AppColors.primary,
-                  onTap: () => _updateStatus('ACTIVE'),
-                  isActive: status == 'ACTIVE',
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatusBtn(
-                  label: 'End',
-                  icon: Icons.stop_rounded,
-                  bg: const Color(0xFFFFEBEE),
-                  fg: const Color(0xFFC62828),
-                  onTap: () => _updateStatus('ENDED'),
-                  isActive: status == 'ENDED',
-                ),
+              const Icon(Icons.schedule_rounded, size: 14, color: AppColors.textSecondary),
+              const SizedBox(width: 6),
+              Text(
+                'Ended ${_formatDate(session.endTime!)}',
+                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
             ],
           ),
+        if (session.receiptUrl != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            'RECEIPT',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              session.receiptUrl!,
+              height: 160,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  color: AppColors.background,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Center(
+                  child: Icon(Icons.receipt_long_rounded, color: AppColors.textSecondary, size: 32),
+                ),
+              ),
+            ),
+          ),
         ],
-      ),
+      ],
     );
   }
 
@@ -389,9 +452,9 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
         children: [
           const Text('📝', style: TextStyle(fontSize: 36)),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'No checklists yet',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
           ),
           const SizedBox(height: 6),
           Text(
@@ -433,7 +496,243 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
   Future<void> _updateStatus(String status) async {
     await ref.read(sessionNotifierProvider.notifier).updateStatus(widget.sessionId, status);
   }
+
+  void _showCloseSessionSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CloseSessionSheet(
+        sessionId: widget.sessionId,
+        onClosed: () => Navigator.pop(context),
+      ),
+    );
+  }
+
+  String _formatDate(String iso) {
+    try {
+      final dt = DateTime.parse(iso).toLocal();
+      final months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return '${dt.day} ${months[dt.month - 1]} ${dt.year}, ${dt.hour.toString().padLeft(2,'0')}:${dt.minute.toString().padLeft(2,'0')}';
+    } catch (_) {
+      return iso;
+    }
+  }
 }
+
+// ── Close Session Bottom Sheet ───────────────────────────────────────────────
+
+class _CloseSessionSheet extends ConsumerStatefulWidget {
+  final String sessionId;
+  final VoidCallback onClosed;
+
+  const _CloseSessionSheet({required this.sessionId, required this.onClosed});
+
+  @override
+  ConsumerState<_CloseSessionSheet> createState() => _CloseSessionSheetState();
+}
+
+class _CloseSessionSheetState extends ConsumerState<_CloseSessionSheet> {
+  File? _receipt;
+  bool _confirmed = false;
+  bool _isLoading = false;
+
+  Future<void> _pickReceipt(ImageSource source) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: source, imageQuality: 80);
+    if (picked != null) setState(() => _receipt = File(picked.path));
+  }
+
+  Future<void> _submit() async {
+    setState(() => _isLoading = true);
+    final success = await ref.read(sessionNotifierProvider.notifier).closeSession(
+      widget.sessionId,
+      receipt: _receipt,
+    );
+    setState(() => _isLoading = false);
+
+    if (success && mounted) {
+      Navigator.pop(context);
+      widget.onClosed();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 36),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Handle
+          Center(
+            child: Container(
+              width: 36, height: 4,
+              decoration: BoxDecoration(color: const Color(0xFFE0E0E0), borderRadius: BorderRadius.circular(2)),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Icon + title
+          Container(
+            width: 52, height: 52,
+            decoration: BoxDecoration(color: const Color(0xFFFFEBEE), borderRadius: BorderRadius.circular(16)),
+            child: const Center(child: Icon(Icons.stop_circle_rounded, color: Color(0xFFC62828), size: 28)),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'End this session?',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'This will close the grocery run. All checklists will be locked. This action cannot be undone.',
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.5),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Receipt section
+          Text(
+            'UPLOAD RECEIPT (OPTIONAL)',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.5),
+          ),
+          const SizedBox(height: 10),
+
+          if (_receipt != null)
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.file(_receipt!, height: 140, width: double.infinity, fit: BoxFit.cover),
+                ),
+                Positioned(
+                  top: 8, right: 8,
+                  child: GestureDetector(
+                    onTap: () => setState(() => _receipt = null),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(color: Colors.black54, shape: BoxShape.circle),
+                      child: const Icon(Icons.close_rounded, color: Colors.white, size: 16),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                Expanded(child: _ReceiptPickerBtn(icon: Icons.photo_library_rounded, label: 'Gallery', onTap: () => _pickReceipt(ImageSource.gallery))),
+                const SizedBox(width: 10),
+                Expanded(child: _ReceiptPickerBtn(icon: Icons.camera_alt_rounded, label: 'Camera', onTap: () => _pickReceipt(ImageSource.camera))),
+              ],
+            ),
+
+          const SizedBox(height: 24),
+
+          // Confirmation checkbox
+          GestureDetector(
+            onTap: () => setState(() => _confirmed = !_confirmed),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 22, height: 22,
+                  decoration: BoxDecoration(
+                    color: _confirmed ? const Color(0xFFC62828) : Colors.white,
+                    border: Border.all(color: _confirmed ? const Color(0xFFC62828) : const Color(0xFFBDBDBD), width: 2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: _confirmed ? const Icon(Icons.check_rounded, color: Colors.white, size: 14) : null,
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    'I confirm I want to end this session',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Buttons
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: _isLoading ? null : () => Navigator.pop(context),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    side: const BorderSide(color: Color(0xFFE0E0E0)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: (_isLoading || !_confirmed) ? null : _submit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFC62828),
+                    disabledBackgroundColor: const Color(0xFFEF9A9A),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: _isLoading
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('End Session', style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReceiptPickerBtn extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ReceiptPickerBtn({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE0E0E0)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: AppColors.textSecondary, size: 22),
+            const SizedBox(height: 4),
+            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Checklist Row ────────────────────────────────────────────────────────────
 
 class _ChecklistRow extends StatelessWidget {
   final ChecklistModel checklist;
@@ -458,12 +757,8 @@ class _ChecklistRow extends StatelessWidget {
         child: Row(
           children: [
             Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.primaryXLight,
-                borderRadius: BorderRadius.circular(12),
-              ),
+              width: 40, height: 40,
+              decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(12)),
               child: const Center(child: Text('📋', style: TextStyle(fontSize: 18))),
             ),
             const SizedBox(width: 12),
@@ -481,6 +776,8 @@ class _ChecklistRow extends StatelessWidget {
   }
 }
 
+// ── Pulsing Dot ──────────────────────────────────────────────────────────────
+
 class _PulsingDot extends StatefulWidget {
   @override
   State<_PulsingDot> createState() => _PulsingDotState();
@@ -493,13 +790,8 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    )..repeat(reverse: true);
-    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -512,14 +804,11 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animation,
-      builder: (context2, child2) => Opacity(
+      builder: (_, __) => Opacity(
         opacity: _animation.value,
         child: Container(
           width: 7, height: 7,
-          decoration: const BoxDecoration(
-            color: Color(0xFF4CAF50),
-            shape: BoxShape.circle,
-          ),
+          decoration: const BoxDecoration(color: Color(0xFF4CAF50), shape: BoxShape.circle),
         ),
       ),
     );

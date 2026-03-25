@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/core/errors/exceptions.dart';
@@ -10,6 +12,7 @@ abstract class SessionRemoteDatasource {
   Future<SessionModel> getSession(String sessionId);
   Future<List<SessionModel>> getAllSession(String familyId);
   Future<SessionModel> updateSessionStatus(String sessionId, String status);
+  Future<Map<String, dynamic>> uploadReceipt(String sessionId, File receiptFile);
 }
 
 class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
@@ -61,6 +64,25 @@ class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
       final request = UpdateSessionStatusModel(sessionId: sessionId, status: status);
       final response = await dio.put('/session/updateStatus', data: request.toJson());
       return SessionModel.fromJson(response.data as Map<String, Object?>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> uploadReceipt(String sessionId, File receiptFile) async {
+    try {
+      final formData = FormData.fromMap({
+        'session_id': sessionId,
+        'file': await MultipartFile.fromFile(receiptFile.path, filename: receiptFile.path.split('/').last),
+      });
+      final response = await dio.post(
+        '/session/upload-receipt',
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+      return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

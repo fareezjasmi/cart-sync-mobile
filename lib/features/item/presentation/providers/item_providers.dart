@@ -34,110 +34,146 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
   ) : super(ItemPageInitial());
 
   Future<String?> _uploadImage(File imageFile) async {
-    final result = await uploadItemImageUsecase(imageFile);
-    String? imageUrl;
-    result.fold(
-      (failure) => state = state.copyWith(errorMessage: failure.errorMessage),
-      (data) => imageUrl = data['image_url'] as String?,
-    );
-    return imageUrl;
+    try {
+      final result = await uploadItemImageUsecase(imageFile);
+      String? imageUrl;
+      result.fold(
+        (failure) => state = state.copyWith(errorMessage: failure.errorMessage),
+        (data) => imageUrl = data['image_url'] as String?,
+      );
+      return imageUrl;
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+      return null;
+    }
   }
 
   Future<bool> createItem(String checklistId, String name, {File? imageFile}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-
-    String? imageUrl;
-    if (imageFile != null) {
-      imageUrl = await _uploadImage(imageFile);
-      print('Saved image url: $imageUrl');
-      if (imageUrl == null) {
-        state = state.copyWith(isLoading: false);
-        return false;
+    try {
+      String? imageUrl;
+      if (imageFile != null) {
+        imageUrl = await _uploadImage(imageFile);
+        if (imageUrl == null) return false;
       }
+
+      final item = ItemModel(checklistId: checklistId, name: name, isBought: false, image: imageUrl);
+      final result = await createItemUsecase(item);
+
+      return result.fold(
+        (failure) {
+          state = state.copyWith(errorMessage: failure.errorMessage);
+          return false;
+        },
+        (i) {
+          final updated = List<ItemModel>.from(state.items)..add(i);
+          state = state.copyWith(items: updated);
+          return true;
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+      return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
-
-    final item = ItemModel(checklistId: checklistId, name: name, isBought: false, image: imageUrl);
-    final result = await createItemUsecase(item);
-
-    return result.fold(
-      (failure) {
-        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
-        return false;
-      },
-      (i) {
-        final updated = List<ItemModel>.from(state.items)..add(i);
-        state = state.copyWith(isLoading: false, items: updated);
-        return true;
-      },
-    );
   }
 
   Future<bool> updateItem(ItemModel item, {File? imageFile}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-
-    String? imageUrl = item.image;
-    if (imageFile != null) {
-      imageUrl = await _uploadImage(imageFile);
-      if (imageUrl == null) {
-        state = state.copyWith(isLoading: false);
-        return false;
+    try {
+      String? imageUrl = item.image;
+      if (imageFile != null) {
+        imageUrl = await _uploadImage(imageFile);
+        if (imageUrl == null) return false;
       }
-    }
 
-    final result = await updateItemUsecase(item.copyWith(image: imageUrl));
-    return result.fold(
-      (failure) {
-        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
-        return false;
-      },
-      (updated) {
-        final items = state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList();
-        state = state.copyWith(isLoading: false, items: items);
-        return true;
-      },
-    );
+      final result = await updateItemUsecase(item.copyWith(image: imageUrl));
+      return result.fold(
+        (failure) {
+          state = state.copyWith(errorMessage: failure.errorMessage);
+          return false;
+        },
+        (updated) {
+          final items = state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList();
+          state = state.copyWith(items: items);
+          return true;
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+      return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> loadAllItems(String checklistId) async {
     state = state.copyWith(isLoading: true);
-    final result = await getAllItemsUsecase(checklistId);
-    result.fold(
-      (failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage),
-      (items) => state = state.copyWith(isLoading: false, items: items),
-    );
+    try {
+      final result = await getAllItemsUsecase(checklistId);
+      result.fold(
+        (failure) => state = state.copyWith(errorMessage: failure.errorMessage),
+        (items) => state = state.copyWith(items: items),
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> toggleBought(ItemModel item) async {
-    final result = await updateItemUsecase(item);
-    result.fold((failure) => state = state.copyWith(errorMessage: failure.errorMessage), (updated) {
-      final items = state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList();
-      state = state.copyWith(items: items);
-    });
+    state = state.copyWith(isLoading: true);
+    try {
+      final result = await updateItemUsecase(item);
+      result.fold((failure) => state = state.copyWith(errorMessage: failure.errorMessage), (updated) {
+        final items = state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList();
+        state = state.copyWith(items: items);
+      });
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<bool> bulkCreate(List<ItemModel> items) async {
     state = state.copyWith(isLoading: true);
-    final result = await bulkCreateItemsUsecase(items);
-    return result.fold(
-      (failure) {
-        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
-        return false;
-      },
-      (created) {
-        final updated = List<ItemModel>.from(state.items)..addAll(created);
-        state = state.copyWith(isLoading: false, items: updated);
-        return true;
-      },
-    );
+    try {
+      final result = await bulkCreateItemsUsecase(items);
+      return result.fold(
+        (failure) {
+          state = state.copyWith(errorMessage: failure.errorMessage);
+          return false;
+        },
+        (created) {
+          final updated = List<ItemModel>.from(state.items)..addAll(created);
+          state = state.copyWith(items: updated);
+          return true;
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+      return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   Future<void> deleteItem(String itemId) async {
     state = state.copyWith(isLoading: true);
-    final result = await deleteItemUsecase(itemId);
-    result.fold((failure) => state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage), (_) {
-      final updated = state.items.where((i) => i.itemId != itemId).toList();
-      state = state.copyWith(isLoading: false, items: updated);
-    });
+    try {
+      final result = await deleteItemUsecase(itemId);
+      result.fold((failure) => state = state.copyWith(errorMessage: failure.errorMessage), (_) {
+        final updated = state.items.where((i) => i.itemId != itemId).toList();
+        state = state.copyWith(items: updated);
+      });
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
 
   // Called by WebSocketService when a real-time item event arrives

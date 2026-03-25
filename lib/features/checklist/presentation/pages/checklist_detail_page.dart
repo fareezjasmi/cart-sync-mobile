@@ -1,3 +1,4 @@
+import 'package:cartsync/shared/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cartsync/features/checklist/presentation/providers/checklist_providers.dart';
@@ -93,156 +94,164 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
     final boughtCount = bought.length;
     final progress = total > 0 ? boughtCount / total : 0.0;
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            pinned: true,
-            elevation: 0,
-            expandedHeight: total > 0 ? 110 : 56,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-              onPressed: () => Navigator.pop(context),
-            ),
-            actions: [
-              IconButton(
-                icon: Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.edit_outlined, size: 16),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: AppColors.background,
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverAppBar(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                pinned: true,
+                elevation: 0,
+                expandedHeight: total > 0 ? 110 : 56,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                  onPressed: () => Navigator.pop(context),
                 ),
-                onPressed: () => _showRenameDialog(context),
-              ),
-              const SizedBox(width: 8),
-            ],
-            title: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        checklist?.name ?? 'Checklist',
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                actions: [
+                  IconButton(
+                    icon: Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    ],
+                      child: const Icon(Icons.edit_outlined, size: 16),
+                    ),
+                    onPressed: () => _showRenameDialog(context),
                   ),
-                ),
-                // Live indicator
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _PulsingDot(color: const Color(0xFFA5D6A7)),
-                      const SizedBox(width: 5),
-                      const Text(
-                        'Live',
-                        style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                  const SizedBox(width: 8),
+                ],
+                title: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            checklist?.name ?? 'Checklist',
+                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    // Live indicator
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _PulsingDot(color: const Color(0xFFA5D6A7)),
+                          const SizedBox(width: 5),
+                          const Text(
+                            'Live',
+                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: total > 0
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                flexibleSpace: FlexibleSpaceBar(
+                  background: total > 0
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    '$boughtCount of $total items bought',
-                                    style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        '$boughtCount of $total items bought',
+                                        style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 12),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        '${(progress * 100).round()}%',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  const Spacer(),
-                                  Text(
-                                    '${(progress * 100).round()}%',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
+                                  const SizedBox(height: 6),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(3),
+                                    child: LinearProgressIndicator(
+                                      value: progress,
+                                      backgroundColor: Colors.white.withValues(alpha: 0.25),
+                                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                                      minHeight: 6,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 6),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(3),
-                                child: LinearProgressIndicator(
-                                  value: progress,
-                                  backgroundColor: Colors.white.withValues(alpha: 0.25),
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-                                  minHeight: 6,
-                                ),
-                              ),
-                            ],
+                            ),
+                          ],
+                        )
+                      : null,
+                ),
+              ),
+            ],
+            body: checklistState.isLoading && items.isEmpty
+                ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                : items.isEmpty
+                ? _buildEmptyState()
+                : ListView(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                    children: [
+                      if (checklistState.errorMessage != null || itemState.errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.errorLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              checklistState.errorMessage ?? itemState.errorMessage ?? '',
+                              style: TextStyle(color: AppColors.error, fontSize: 13),
+                            ),
                           ),
                         ),
+
+                      if (remaining.isNotEmpty) ...[
+                        _buildSectionHeader('Remaining', remaining.length),
+                        const SizedBox(height: 8),
+                        _buildItemsCard(remaining, false),
+                        const SizedBox(height: 16),
                       ],
-                    )
-                  : null,
-            ),
+
+                      if (bought.isNotEmpty) ...[
+                        _buildSectionHeader('Bought', bought.length),
+                        const SizedBox(height: 8),
+                        _buildItemsCard(bought, true),
+                      ],
+                    ],
+                  ),
           ),
-        ],
-        body: checklistState.isLoading && items.isEmpty
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-            : items.isEmpty
-            ? _buildEmptyState()
-            : ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-                children: [
-                  if (checklistState.errorMessage != null || itemState.errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(12)),
-                        child: Text(
-                          checklistState.errorMessage ?? itemState.errorMessage ?? '',
-                          style: TextStyle(color: AppColors.error, fontSize: 13),
-                        ),
-                      ),
-                    ),
-
-                  if (remaining.isNotEmpty) ...[
-                    _buildSectionHeader('Remaining', remaining.length),
-                    const SizedBox(height: 8),
-                    _buildItemsCard(remaining, false),
-                    const SizedBox(height: 16),
-                  ],
-
-                  if (bought.isNotEmpty) ...[
-                    _buildSectionHeader('Bought', bought.length),
-                    const SizedBox(height: 8),
-                    _buildItemsCard(bought, true),
-                  ],
-                ],
-              ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/create-item', arguments: widget.checklistId),
-        backgroundColor: AppColors.primary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-      ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => Navigator.pushNamed(context, '/create-item', arguments: widget.checklistId),
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
+          ),
+        ),
+        if (checklistState.isLoading || itemState.isLoading) const LoadingIndicator(),
+      ],
     );
   }
 
@@ -431,17 +440,6 @@ class _ItemRowState extends State<_ItemRow> {
                       ),
                       child: isBought ? const Icon(Icons.check_rounded, color: Colors.white, size: 14) : null,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Icon
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: isBought ? const Color(0xFFF5F5F5) : AppColors.primaryXLight,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(child: Text(_getEmoji(widget.item.name ?? ''), style: const TextStyle(fontSize: 20))),
                   ),
                   const SizedBox(width: 12),
                   // Name

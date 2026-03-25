@@ -69,16 +69,18 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
                       _buildErrorBanner(state.errorMessage!),
                       const SizedBox(height: 16),
                     ],
-                    ...families.map((f) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _FamilyCard(
-                        family: f,
-                        onTap: () {
-                          StorageService.instance.writeData('familyId', f.familyId ?? '');
-                          Navigator.pushNamed(context, '/family-detail', arguments: f);
-                        },
+                    ...families.map(
+                      (f) => Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _FamilyCard(
+                          family: f,
+                          onTap: () {
+                            StorageService.instance.writeData('familyId', f.familyId ?? '');
+                            Navigator.pushNamed(context, '/family-detail', arguments: f);
+                          },
+                        ),
                       ),
-                    )),
+                    ),
                     const SizedBox(height: 8),
                     OutlinedButton.icon(
                       onPressed: () => Navigator.pushNamed(context, '/create-family'),
@@ -90,8 +92,7 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
               },
             ),
           ),
-          if (state.isLoading)
-            const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+          if (state.isLoading) const Center(child: CircularProgressIndicator(color: AppColors.primary)),
         ],
       ),
     );
@@ -100,18 +101,15 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
   Widget _buildEmptyState() {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7,
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               width: 96,
               height: 96,
-              decoration: BoxDecoration(
-                color: AppColors.primaryXLight,
-                borderRadius: BorderRadius.circular(28),
-              ),
+              decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(28)),
               child: const Center(child: Text('🏠', style: TextStyle(fontSize: 44))),
             ),
             const SizedBox(height: 20),
@@ -127,7 +125,7 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
             ),
             const SizedBox(height: 28),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
               child: ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, '/create-family'),
                 child: const Text('Create Family'),
@@ -147,7 +145,9 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
         children: [
           Icon(Icons.error_outline, color: AppColors.error, size: 18),
           const SizedBox(width: 8),
-          Expanded(child: Text(message, style: TextStyle(color: AppColors.error, fontSize: 13))),
+          Expanded(
+            child: Text(message, style: TextStyle(color: AppColors.error, fontSize: 13)),
+          ),
         ],
       ),
     );
@@ -203,11 +203,7 @@ class _FamilyCard extends StatelessWidget {
                     child: Center(
                       child: Text(
                         initials,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
                       ),
                     ),
                   ),
@@ -218,19 +214,12 @@ class _FamilyCard extends StatelessWidget {
                       children: [
                         Text(
                           name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           'ID: ${family.familyId?.substring(0, 8) ?? '-'}...',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.65),
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.65), fontSize: 12),
                         ),
                       ],
                     ),
@@ -242,20 +231,13 @@ class _FamilyCard extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
               child: Row(
                 children: [
-                  Text(
-                    'Tap to view sessions',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
-                  ),
+                  Text('Tap to view sessions', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                   const Spacer(),
                   Row(
                     children: [
                       const Text(
                         'View',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(width: 2),
                       const Icon(Icons.chevron_right_rounded, color: AppColors.primary, size: 18),

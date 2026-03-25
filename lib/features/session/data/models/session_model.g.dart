@@ -18,6 +18,7 @@ _SessionModel _$SessionModelFromJson(Map<String, dynamic> json) =>
       shopperUserId: json['shopper_user_id'] as String?,
       startTime: json['start_time'] as String?,
       endTime: json['end_time'] as String?,
+      receiptUrl: json['receipt_url'] as String?,
     );
 
 Map<String, dynamic> _$SessionModelToJson(_SessionModel instance) =>
@@ -32,6 +33,7 @@ Map<String, dynamic> _$SessionModelToJson(_SessionModel instance) =>
       'shopper_user_id': instance.shopperUserId,
       'start_time': instance.startTime,
       'end_time': instance.endTime,
+      'receipt_url': instance.receiptUrl,
     };
 
 _SessionActiveUser _$SessionActiveUserFromJson(Map<String, dynamic> json) =>

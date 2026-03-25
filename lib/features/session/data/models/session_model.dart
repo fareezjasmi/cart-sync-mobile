@@ -16,6 +16,7 @@ abstract class SessionModel with _$SessionModel {
     @JsonKey(name: 'shopper_user_id') String? shopperUserId,
     @JsonKey(name: 'start_time') String? startTime,
     @JsonKey(name: 'end_time') String? endTime,
+    @JsonKey(name: 'receipt_url') String? receiptUrl,
   }) = _SessionModel;
 
   factory SessionModel.fromJson(Map<String, Object?> json) => _$SessionModelFromJson(json);
