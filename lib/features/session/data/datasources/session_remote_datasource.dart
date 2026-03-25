@@ -13,6 +13,7 @@ abstract class SessionRemoteDatasource {
   Future<List<SessionModel>> getAllSession(String familyId);
   Future<SessionModel> updateSessionStatus(String sessionId, String status);
   Future<Map<String, dynamic>> uploadReceipt(String sessionId, File receiptFile);
+  Future<Map<String, dynamic>> deleteSession(String sessionId);
 }
 
 class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
@@ -42,14 +43,12 @@ class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
     }
   }
 
-    @override
+  @override
   Future<List<SessionModel>> getAllSession(String familyId) async {
     try {
       final response = await dio.get('/session/getAll/$familyId');
       final list = response.data as List;
-      return list
-          .map((e) => SessionModel.fromJson(e as Map<String, Object?>))
-          .toList();
+      return list.map((e) => SessionModel.fromJson(e as Map<String, Object?>)).toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       if (e.response?.statusCode == 404) throw ServerException(message: 'Session not found');
@@ -58,8 +57,7 @@ class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
   }
 
   @override
-  Future<SessionModel> updateSessionStatus(
-      String sessionId, String status) async {
+  Future<SessionModel> updateSessionStatus(String sessionId, String status) async {
     try {
       final request = UpdateSessionStatusModel(sessionId: sessionId, status: status);
       final response = await dio.put('/session/updateStatus', data: request.toJson());
@@ -82,6 +80,17 @@ class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
       );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> deleteSession(String sessionId) async {
+    try {
+      final response = await dio.delete('/session/delete/$sessionId');
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();

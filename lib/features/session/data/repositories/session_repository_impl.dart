@@ -35,8 +35,7 @@ class SessionRepositoryImpl implements SessionRepository {
   }
 
   @override
-  Future<Either<Failure, SessionModel>> updateSessionStatus(
-      String sessionId, String status) async {
+  Future<Either<Failure, SessionModel>> updateSessionStatus(String sessionId, String status) async {
     try {
       return Right(await datasource.updateSessionStatus(sessionId, status));
     } on UnauthorizedException {
@@ -45,7 +44,7 @@ class SessionRepositoryImpl implements SessionRepository {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to update status'));
     }
   }
-  
+
   @override
   Future<Either<Failure, List<SessionModel>>> getAllSession(String familyId) async {
     try {
@@ -65,6 +64,17 @@ class SessionRepositoryImpl implements SessionRepository {
       return Left(UnauthorizedError());
     } on ServerException catch (e) {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to upload receipt'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> deleteSession(String sessionId) async {
+    try {
+      return Right(await datasource.deleteSession(sessionId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to delete session'));
     }
   }
 }

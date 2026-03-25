@@ -10,4 +10,5 @@ abstract class SessionRepository {
   Future<Either<Failure, List<SessionModel>>> getAllSession(String familyId);
   Future<Either<Failure, SessionModel>> updateSessionStatus(String sessionId, String status);
   Future<Either<Failure, Map<String, dynamic>>> uploadReceipt(String sessionId, File receiptFile);
+  Future<Either<Failure, Map<String, dynamic>>> deleteSession(String sessionId);
 }

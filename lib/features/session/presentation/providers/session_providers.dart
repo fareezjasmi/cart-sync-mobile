@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cartsync/features/session/domain/usecases/delete_session_usecase.dart';
 import 'package:cartsync/features/session/domain/usecases/get_all_session_usecase.dart';
 import 'package:cartsync/features/session/domain/usecases/upload_receipt_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +19,7 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
   final GetAllSessionUsecase getAllSessionUsecase;
   final UpdateSessionStatusUsecase updateSessionStatusUsecase;
   final UploadReceiptUsecase uploadReceiptUsecase;
+  final DeleteSessionUsecase deleteSessionUsecase;
 
   SessionNotifier(
     this.ref,
@@ -26,6 +28,7 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
     this.getAllSessionUsecase,
     this.updateSessionStatusUsecase,
     this.uploadReceiptUsecase,
+    this.deleteSessionUsecase,
   ) : super(SessionPageInitial());
 
   Future<bool> createSession({
@@ -122,6 +125,17 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
       },
     );
   }
+
+  Future<void> deleteSession(String sessionId) async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final response = await deleteSessionUsecase(sessionId);
+    } catch (e) {
+      throw Exception(e);
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
+  }
 }
 
 final sessionNotifierProvider = StateNotifierProvider<SessionNotifier, SessionPageModel>((ref) {
@@ -132,5 +146,6 @@ final sessionNotifierProvider = StateNotifierProvider<SessionNotifier, SessionPa
     ref.watch(getAllSessionUsecaseProvider),
     ref.watch(updateSessionStatusUsecaseProvider),
     ref.watch(uploadReceiptUsecaseProvider),
+    ref.watch(deleteSessionUsecaseProvider),
   );
 });
