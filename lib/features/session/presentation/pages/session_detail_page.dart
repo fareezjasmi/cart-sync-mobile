@@ -73,9 +73,15 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    session.name ?? 'Session',
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                  Row(
+                    children: [
+                      Text(
+                        session.name ?? 'Session',
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatusBadge(session.sessionStatus ?? 'ACTIVE'),
+                    ],
                   ),
                   if (session.location != null && session.location!.isNotEmpty)
                     Text(session.location!, style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 11)),
@@ -86,6 +92,55 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          if (session != null && !isEnded)
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'end') {
+                  _showCloseSessionSheet();
+                } else {
+                  _updateStatus(value);
+                }
+              },
+              icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              itemBuilder: (_) => [
+                if (session.sessionStatus != 'PAUSED')
+                  const PopupMenuItem(
+                    value: 'PAUSED',
+                    child: Row(
+                      children: [
+                        Icon(Icons.pause_rounded, color: Color(0xFFE65100), size: 20),
+                        SizedBox(width: 10),
+                        Text('Pause session', style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                if (session.sessionStatus == 'PAUSED')
+                  const PopupMenuItem(
+                    value: 'ACTIVE',
+                    child: Row(
+                      children: [
+                        Icon(Icons.play_arrow_rounded, color: AppColors.primary, size: 20),
+                        SizedBox(width: 10),
+                        Text('Resume session', style: TextStyle(fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                const PopupMenuDivider(),
+                const PopupMenuItem(
+                  value: 'end',
+                  child: Row(
+                    children: [
+                      Icon(Icons.stop_rounded, color: Color(0xFFC62828), size: 20),
+                      SizedBox(width: 10),
+                      Text('End session', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
       ),
       floatingActionButton: isEnded
           ? null
@@ -107,8 +162,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
                 children: [
                   if (session != null) ...[
-                    _buildStatusCard(session),
-                    const SizedBox(height: 12),
+                    if (isEnded) ...[_buildEndedCard(session), const SizedBox(height: 12)],
                     _buildActiveUsersCard(sessionState.activeUser ?? []),
                     const SizedBox(height: 20),
                   ],
@@ -155,10 +209,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
     );
   }
 
-  Widget _buildStatusCard(SessionModel session) {
-    final status = session.sessionStatus ?? 'ACTIVE';
-    final isEnded = status == 'ENDED';
-
+  Widget _buildEndedCard(SessionModel session) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -169,140 +220,47 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                'Session Status',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textSecondary,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const Spacer(),
-              _buildStatusBadge(status),
-            ],
-          ),
-          const SizedBox(height: 14),
-          if (isEnded)
-            _buildEndedInfo(session)
-          else
+          if (session.endTime != null)
             Row(
               children: [
-                Expanded(
-                  child: _buildStatusBtn(
-                    label: 'Pause',
-                    icon: Icons.pause_rounded,
-                    bg: const Color(0xFFFFF8E1),
-                    fg: const Color(0xFFE65100),
-                    onTap: () => _updateStatus('PAUSED'),
-                    isActive: status == 'PAUSED',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildStatusBtn(
-                    label: 'Resume',
-                    icon: Icons.play_arrow_rounded,
-                    bg: AppColors.primaryXLight,
-                    fg: AppColors.primary,
-                    onTap: () => _updateStatus('ACTIVE'),
-                    isActive: status == 'ACTIVE',
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildStatusBtn(
-                    label: 'End',
-                    icon: Icons.stop_rounded,
-                    bg: const Color(0xFFFFEBEE),
-                    fg: const Color(0xFFC62828),
-                    onTap: _showCloseSessionSheet,
-                    isActive: false,
-                  ),
+                const Icon(Icons.schedule_rounded, size: 14, color: AppColors.textSecondary),
+                const SizedBox(width: 6),
+                Text(
+                  'Ended ${_formatDate(session.endTime!)}',
+                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
                 ),
               ],
             ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEndedInfo(SessionModel session) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (session.endTime != null)
-          Row(
-            children: [
-              const Icon(Icons.schedule_rounded, size: 14, color: AppColors.textSecondary),
-              const SizedBox(width: 6),
-              Text(
-                'Ended ${_formatDate(session.endTime!)}',
-                style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
-              ),
-            ],
-          ),
-        if (session.receiptUrl != null) ...[
-          const SizedBox(height: 12),
-          Text(
-            'RECEIPT',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textSecondary,
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: Image.network(
-              session.receiptUrl!,
-              height: 160,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                height: 80,
-                decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(10)),
-                child: const Center(child: Icon(Icons.receipt_long_rounded, color: AppColors.textSecondary, size: 32)),
+          if (session.receiptUrl != null) ...[
+            const SizedBox(height: 12),
+            const Text(
+              'RECEIPT',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textSecondary,
+                letterSpacing: 0.5,
               ),
             ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildStatusBtn({
-    required String label,
-    required IconData icon,
-    required Color bg,
-    required Color fg,
-    required VoidCallback onTap,
-    required bool isActive,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(12),
-          border: isActive ? Border.all(color: fg, width: 1.5) : null,
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: fg, size: 18),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(color: fg, fontSize: 12, fontWeight: FontWeight.w700),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                session.receiptUrl!,
+                height: 160,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  height: 80,
+                  decoration: BoxDecoration(color: AppColors.background, borderRadius: BorderRadius.circular(10)),
+                  child: const Center(
+                    child: Icon(Icons.receipt_long_rounded, color: AppColors.textSecondary, size: 32),
+                  ),
+                ),
+              ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -733,7 +691,7 @@ class _ReceiptPickerBtn extends StatelessWidget {
 
 // ── Checklist Row ────────────────────────────────────────────────────────────
 
-class _ChecklistRow extends StatelessWidget {
+class _ChecklistRow extends ConsumerWidget {
   final ChecklistModel checklist;
   final bool isLast;
   final VoidCallback onTap;
@@ -741,13 +699,19 @@ class _ChecklistRow extends StatelessWidget {
   const _ChecklistRow({required this.checklist, required this.isLast, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final checklistState = ref.watch(checklistNotifierProvider);
+    final itemState = ref.watch(itemNotifierProvider);
+    final checklist = checklistState.currentChecklist;
+    final items = itemState.items;
+    final bought = items.where((i) => i.isBought ?? false).toList();
+    final total = items.length;
+    final boughtCount = bought.length;
+    final progress = total > 0 ? boughtCount / total : 0.0;
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.vertical(
-        top: const Radius.circular(0),
-        bottom: isLast ? const Radius.circular(16) : Radius.zero,
-      ),
+      borderRadius: BorderRadius.vertical(bottom: isLast ? const Radius.circular(16) : Radius.zero),
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
         decoration: BoxDecoration(
@@ -763,11 +727,46 @@ class _ChecklistRow extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                checklist.name ?? 'Checklist',
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    checklist?.name ?? 'Checklist',
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 5),
+                      Row(
+                        children: [
+                          Text(
+                            '$boughtCount/$total items',
+                            style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '${(progress * 100).round()}%',
+                            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.primary),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          backgroundColor: AppColors.primaryXLight,
+                          valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                          minHeight: 4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
+            const SizedBox(width: 8),
             const Icon(Icons.chevron_right_rounded, color: AppColors.textSecondary, size: 20),
           ],
         ),

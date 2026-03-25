@@ -191,16 +191,26 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
           if (!alreadyExists) {
             state = state.copyWith(items: [...state.items, item]);
           }
+          if (item.checklistId != null) {
+            ref.invalidate(checklistItemsProvider(item.checklistId!));
+          }
         }
       case 'ITEM_UPDATED':
       case 'ITEM_BOUGHT':
         if (rawItem != null) {
           final updated = ItemModel.fromJson(rawItem);
           state = state.copyWith(items: state.items.map((i) => i.itemId == updated.itemId ? updated : i).toList());
+          if (updated.checklistId != null) {
+            ref.invalidate(checklistItemsProvider(updated.checklistId!));
+          }
         }
       case 'ITEM_DELETED':
         if (deletedItemId != null) {
+          final checklistId = state.items.where((i) => i.itemId == deletedItemId).firstOrNull?.checklistId;
           state = state.copyWith(items: state.items.where((i) => i.itemId != deletedItemId).toList());
+          if (checklistId != null) {
+            ref.invalidate(checklistItemsProvider(checklistId));
+          }
         }
     }
   }
@@ -217,4 +227,10 @@ final itemNotifierProvider = StateNotifierProvider<ItemNotifier, ItemPageModel>(
     ref.watch(deleteItemUsecaseProvider),
     ref.watch(uploadItemImageUsecaseProvider),
   );
+});
+
+final checklistItemsProvider = FutureProvider.family<List<ItemModel>, String>((ref, checklistId) async {
+  final usecase = ref.watch(getAllItemsUsecaseProvider);
+  final result = await usecase(checklistId);
+  return result.fold((_) => [], (items) => items);
 });
