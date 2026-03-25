@@ -132,7 +132,11 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
                           onTap: () => Navigator.pushNamed(
                             context,
                             '/session-detail',
-                            arguments: SessionDetailsPageArgs(s.sessionId ?? '', widget.familyModel.isAdmin),
+                            arguments: SessionDetailsPageArgs(
+                              s.sessionId ?? '',
+                              widget.familyModel.isAdmin,
+                              widget.familyModel.familyId ?? '',
+                            ),
                           ),
                         ),
                       ),

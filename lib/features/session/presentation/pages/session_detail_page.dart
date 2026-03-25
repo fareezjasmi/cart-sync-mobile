@@ -14,8 +14,9 @@ import 'package:image_picker/image_picker.dart';
 
 class SessionDetailPage extends ConsumerStatefulWidget {
   final String sessionId;
+  final String familyId;
   final bool? isAdmin;
-  const SessionDetailPage({super.key, required this.sessionId, this.isAdmin = false});
+  const SessionDetailPage({super.key, required this.sessionId, this.isAdmin = false, required this.familyId});
 
   @override
   ConsumerState<SessionDetailPage> createState() => _SessionDetailPageState();
@@ -67,146 +68,154 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
     final session = sessionState.currentSession;
     final isEnded = session?.sessionStatus == 'ENDED';
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: session != null
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        session.name ?? 'Session',
-                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(width: 8),
-                      _buildStatusBadge(session.sessionStatus ?? 'ACTIVE'),
-                    ],
-                  ),
-                  if (session.location != null && session.location!.isNotEmpty)
-                    Text(session.location!, style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 11)),
-                ],
-              )
-            : const Text('Session'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        actions: [
-          if (session != null && !isEnded && widget.isAdmin != null && widget.isAdmin != false)
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'end') {
-                  _showCloseSessionSheet();
-                } else {
-                  _updateStatus(value);
-                }
-              },
-              icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              itemBuilder: (_) => [
-                if (session.sessionStatus != 'PAUSED')
-                  const PopupMenuItem(
-                    value: 'PAUSED',
-                    child: Row(
+    return PopScope(
+      onPopInvoked: (didPop) {
+        ref.read(sessionNotifierProvider.notifier).loadAllSessions(widget.familyId);
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          title: session != null
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Icon(Icons.pause_rounded, color: Color(0xFFE65100), size: 20),
-                        SizedBox(width: 10),
-                        Text('Pause session', style: TextStyle(fontSize: 14)),
-                      ],
-                    ),
-                  ),
-                if (session.sessionStatus == 'PAUSED')
-                  const PopupMenuItem(
-                    value: 'ACTIVE',
-                    child: Row(
-                      children: [
-                        Icon(Icons.play_arrow_rounded, color: AppColors.primary, size: 20),
-                        SizedBox(width: 10),
-                        Text('Resume session', style: TextStyle(fontSize: 14)),
-                      ],
-                    ),
-                  ),
-                const PopupMenuDivider(),
-                const PopupMenuItem(
-                  value: 'end',
-                  child: Row(
-                    children: [
-                      Icon(Icons.stop_rounded, color: Color(0xFFC62828), size: 20),
-                      SizedBox(width: 10),
-                      Text('End session', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
-      floatingActionButton: isEnded
-          ? null
-          : FloatingActionButton(
-              onPressed: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-            ),
-      body: sessionState.isLoading && session == null
-          ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
-          : RefreshIndicator(
-              onRefresh: () async {
-                ref.read(sessionNotifierProvider.notifier).loadSession(widget.sessionId);
-                ref.read(checklistNotifierProvider.notifier).loadChecklistsBySession(widget.sessionId);
-              },
-              color: AppColors.primary,
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-                children: [
-                  if (session != null) ...[
-                    if (isEnded) ...[_buildEndedCard(session), const SizedBox(height: 12)],
-                    _buildActiveUsersCard(sessionState.activeUser ?? []),
-                    const SizedBox(height: 20),
-                  ],
-
-                  Row(
-                    children: [
-                      const Text(
-                        'Checklists',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                      ),
-                      const Spacer(),
-                      if (!isEnded)
-                        GestureDetector(
-                          onTap: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
-                          child: const Row(
-                            children: [
-                              Icon(Icons.add_rounded, color: AppColors.primary, size: 18),
-                              SizedBox(width: 2),
-                              Text(
-                                'Add',
-                                style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          session.name ?? 'Session',
+                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  if (checklistState.isLoading && checklistState.checklists.isEmpty)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(32),
-                        child: CircularProgressIndicator(color: AppColors.primary),
+                        const SizedBox(width: 8),
+                        _buildStatusBadge(session.sessionStatus ?? 'ACTIVE'),
+                      ],
+                    ),
+                    if (session.location != null && session.location!.isNotEmpty)
+                      Text(
+                        session.location!,
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 11),
                       ),
-                    )
-                  else if (checklistState.checklists.isEmpty)
-                    _buildEmptyChecklists()
-                  else
-                    _buildChecklistCards(checklistState.checklists),
+                  ],
+                )
+              : const Text('Session'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+            onPressed: () => Navigator.pop(context),
+          ),
+          actions: [
+            if (session != null && !isEnded && widget.isAdmin != null && widget.isAdmin != false)
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'end') {
+                    _showCloseSessionSheet();
+                  } else {
+                    _updateStatus(value);
+                  }
+                },
+                icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                itemBuilder: (_) => [
+                  if (session.sessionStatus != 'PAUSED')
+                    const PopupMenuItem(
+                      value: 'PAUSED',
+                      child: Row(
+                        children: [
+                          Icon(Icons.pause_rounded, color: Color(0xFFE65100), size: 20),
+                          SizedBox(width: 10),
+                          Text('Pause session', style: TextStyle(fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  if (session.sessionStatus == 'PAUSED')
+                    const PopupMenuItem(
+                      value: 'ACTIVE',
+                      child: Row(
+                        children: [
+                          Icon(Icons.play_arrow_rounded, color: AppColors.primary, size: 20),
+                          SizedBox(width: 10),
+                          Text('Resume session', style: TextStyle(fontSize: 14)),
+                        ],
+                      ),
+                    ),
+                  const PopupMenuDivider(),
+                  const PopupMenuItem(
+                    value: 'end',
+                    child: Row(
+                      children: [
+                        Icon(Icons.stop_rounded, color: Color(0xFFC62828), size: 20),
+                        SizedBox(width: 10),
+                        Text('End session', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
+          ],
+        ),
+        floatingActionButton: isEnded
+            ? null
+            : FloatingActionButton(
+                onPressed: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
+              ),
+        body: sessionState.isLoading && session == null
+            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            : RefreshIndicator(
+                onRefresh: () async {
+                  ref.read(sessionNotifierProvider.notifier).loadSession(widget.sessionId);
+                  ref.read(checklistNotifierProvider.notifier).loadChecklistsBySession(widget.sessionId);
+                },
+                color: AppColors.primary,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                  children: [
+                    if (session != null) ...[
+                      if (isEnded) ...[_buildEndedCard(session), const SizedBox(height: 12)],
+                      _buildActiveUsersCard(sessionState.activeUser ?? []),
+                      const SizedBox(height: 20),
+                    ],
+
+                    Row(
+                      children: [
+                        const Text(
+                          'Checklists',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                        ),
+                        const Spacer(),
+                        if (!isEnded)
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(context, '/create-checklist', arguments: widget.sessionId),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.add_rounded, color: AppColors.primary, size: 18),
+                                SizedBox(width: 2),
+                                Text(
+                                  'Add',
+                                  style: TextStyle(color: AppColors.primary, fontSize: 13, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    if (checklistState.isLoading && checklistState.checklists.isEmpty)
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(32),
+                          child: CircularProgressIndicator(color: AppColors.primary),
+                        ),
+                      )
+                    else if (checklistState.checklists.isEmpty)
+                      _buildEmptyChecklists()
+                    else
+                      _buildChecklistCards(checklistState.checklists),
+                  ],
+                ),
+              ),
+      ),
     );
   }
 

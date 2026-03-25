@@ -17,14 +17,7 @@ class _CreateSessionPageState extends ConsumerState<CreateSessionPage> {
   final _locationController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  static const _quickLocations = [
-    'Giant Supermarket',
-    'Aeon Mall',
-    'Mr DIY',
-    'Mydin',
-    'Tesco',
-    'Jaya Grocer',
-  ];
+  static const _quickLocations = ['Giant Supermarket', 'Aeon Mall', 'Mr DIY', 'Mydin', 'Tesco', 'Jaya Grocer'];
 
   @override
   void dispose() {
@@ -37,13 +30,16 @@ class _CreateSessionPageState extends ConsumerState<CreateSessionPage> {
     if (!_formKey.currentState!.validate()) return;
     final familyId = await ref.read(familyIdProvider.future);
     final userId = await ref.read(userIdProvider.future);
-    final success = await ref.read(sessionNotifierProvider.notifier).createSession(
+    final success = await ref
+        .read(sessionNotifierProvider.notifier)
+        .createSession(
           familyId: familyId ?? '',
           name: _nameController.text.trim(),
           location: _locationController.text.trim(),
           shopperUserId: userId,
         );
     if (success && mounted) {
+      await ref.read(sessionNotifierProvider.notifier).loadAllSessions(familyId ?? '');
       Navigator.pop(context);
     }
   }
@@ -66,10 +62,7 @@ class _CreateSessionPageState extends ConsumerState<CreateSessionPage> {
                   if (state.errorMessage != null) ...[
                     Container(
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.errorLight,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(12)),
                       child: Row(
                         children: [
                           Icon(Icons.error_outline, color: AppColors.error, size: 18),
@@ -131,33 +124,32 @@ class _CreateSessionPageState extends ConsumerState<CreateSessionPage> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: _quickLocations.map((loc) => GestureDetector(
-                      onTap: () => setState(() => _locationController.text = loc),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                        decoration: BoxDecoration(
-                          color: _locationController.text == loc
-                              ? AppColors.primary
-                              : AppColors.primaryXLight,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          loc,
-                          style: TextStyle(
-                            color: _locationController.text == loc ? Colors.white : AppColors.primary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                    children: _quickLocations
+                        .map(
+                          (loc) => GestureDetector(
+                            onTap: () => setState(() => _locationController.text = loc),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                              decoration: BoxDecoration(
+                                color: _locationController.text == loc ? AppColors.primary : AppColors.primaryXLight,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                loc,
+                                style: TextStyle(
+                                  color: _locationController.text == loc ? Colors.white : AppColors.primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                    )).toList(),
+                        )
+                        .toList(),
                   ),
                   const SizedBox(height: 28),
 
-                  ElevatedButton(
-                    onPressed: state.isLoading ? null : _onCreate,
-                    child: const Text('Start Session'),
-                  ),
+                  ElevatedButton(onPressed: state.isLoading ? null : _onCreate, child: const Text('Start Session')),
                 ],
               ),
             ),

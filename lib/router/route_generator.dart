@@ -39,7 +39,7 @@ class RouteGenerator {
       case '/session-detail':
         final args = settings.arguments as SessionDetailsPageArgs;
         return MaterialPageRoute(
-          builder: (_) => SessionDetailPage(sessionId: args.sessionId, isAdmin: args.isAdmin),
+          builder: (_) => SessionDetailPage(sessionId: args.sessionId, isAdmin: args.isAdmin, familyId: args.familyId),
         );
 
       case '/session-history':
@@ -70,6 +70,7 @@ class RouteGenerator {
 class SessionDetailsPageArgs {
   final String sessionId;
   final bool? isAdmin;
+  final String familyId;
 
-  SessionDetailsPageArgs(this.sessionId, this.isAdmin);
+  SessionDetailsPageArgs(this.sessionId, this.isAdmin, this.familyId);
 }
