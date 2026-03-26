@@ -9,4 +9,6 @@ abstract class FamilyRepository {
   Future<Either<Failure, List<FamilyModel>>> getAllFamily(String userId);
   Future<Either<Failure, FamilyRelationshipModel>> addMember(String familyId, String userId);
   Future<Either<Failure, List<FamilyRelationshipModel>>> getFamilyMembers(String familyId);
+  Future<Either<Failure, FamilyModel>> generateInviteCode(String familyId);
+  Future<Either<Failure, FamilyRelationshipModel>> joinFamily(String inviteCode, String userId);
 }

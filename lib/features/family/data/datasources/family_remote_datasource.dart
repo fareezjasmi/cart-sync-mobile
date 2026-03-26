@@ -13,6 +13,8 @@ abstract class FamilyRemoteDatasource {
   // NOTE: GET /family/{id} and GET /family/{familyId} are the same path in the backend.
   // This call uses the same endpoint but expects a List response.
   Future<List<FamilyRelationshipModel>> getFamilyMembers(String familyId);
+  Future<FamilyModel> generateInviteCode(String familyId);
+  Future<FamilyRelationshipModel> joinFamily(String inviteCode, String userId);
 }
 
 class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
@@ -71,6 +73,28 @@ class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
       final response = await dio.get('/family/user/$userId');
       final List<dynamic> data = response.data as List<dynamic>;
       return data.map((e) => FamilyModel.fromJson(e as Map<String, Object?>)).toList();
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+
+  @override
+  Future<FamilyModel> generateInviteCode(String familyId) async {
+    try {
+      final response = await dio.post('/family/$familyId/invite/generate');
+      return FamilyModel.fromJson(response.data as Map<String, Object?>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+
+  @override
+  Future<FamilyRelationshipModel> joinFamily(String inviteCode, String userId) async {
+    try {
+      final response = await dio.post('/family/join', data: {'invite_code': inviteCode, 'user_id': userId});
+      return FamilyRelationshipModel.fromJson(response.data as Map<String, Object?>);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

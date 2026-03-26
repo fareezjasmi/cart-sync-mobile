@@ -19,6 +19,7 @@ class FamilyDetailsPage extends ConsumerStatefulWidget {
 
 class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
   bool _codeCopied = false;
+  bool _generatingCode = false;
 
   @override
   void initState() {
@@ -37,12 +38,45 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
     }
   }
 
+  String _currentInviteCode() {
+    final familyState = ref.read(familyNotifierProvider);
+    final stateFamily = familyState.family;
+    if (stateFamily != null && stateFamily.familyId == widget.familyModel.familyId) {
+      return stateFamily.inviteCode ?? widget.familyModel.inviteCode ?? '';
+    }
+    return widget.familyModel.inviteCode ?? '';
+  }
+
   Future<void> _copyInviteCode() async {
-    final code = widget.familyModel.familyId ?? '';
+    final code = _currentInviteCode();
+    if (code.isEmpty) return;
     await Clipboard.setData(ClipboardData(text: code));
     setState(() => _codeCopied = true);
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) setState(() => _codeCopied = false);
+  }
+
+  Future<void> _generateInviteCode() async {
+    final familyId = widget.familyModel.familyId ?? '';
+    if (familyId.isEmpty) return;
+    setState(() => _generatingCode = true);
+    await ref.read(familyNotifierProvider.notifier).generateInviteCode(familyId);
+    if (mounted) setState(() => _generatingCode = false);
+  }
+
+  String _formatExpiry(String? expiry) {
+    if (expiry == null) return '';
+    try {
+      final dt = DateTime.parse(expiry);
+      final now = DateTime.now();
+      final diff = dt.difference(now);
+      if (diff.isNegative) return 'Expired';
+      if (diff.inHours < 1) return 'Expires in ${diff.inMinutes}m';
+      if (diff.inDays < 1) return 'Expires in ${diff.inHours}h';
+      return 'Expires in ${diff.inDays}d';
+    } catch (_) {
+      return '';
+    }
   }
 
   @override
@@ -297,7 +331,16 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
   }
 
   Widget _buildInviteSection() {
-    final code = widget.familyModel.familyId ?? '';
+    final familyState = ref.watch(familyNotifierProvider);
+    final stateFamily = familyState.family;
+    final isSameFamily = stateFamily?.familyId == widget.familyModel.familyId;
+    final code = (isSameFamily ? stateFamily?.inviteCode : null) ?? widget.familyModel.inviteCode ?? '';
+    final expiry = (isSameFamily ? stateFamily?.inviteCodeExpiry : null) ?? widget.familyModel.inviteCodeExpiry;
+    final isAdmin = widget.familyModel.isAdmin ?? false;
+    final expiryLabel = _formatExpiry(expiry);
+    final isExpired = expiryLabel == 'Expired';
+    final hasCode = code.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -317,67 +360,145 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
                 child: const Center(child: Icon(Icons.link_rounded, color: AppColors.primary, size: 18)),
               ),
               const SizedBox(width: 10),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Family Invite Code',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                     ),
                     Text(
-                      'Share this code to add new members',
-                      style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                      isAdmin ? 'Generate a code and share it with members' : 'Share this code to add new members',
+                      style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.divider),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    code,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontFamily: 'monospace',
-                      color: AppColors.textPrimary,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                ),
+              if (isAdmin && (!hasCode || isExpired)) ...[
                 const SizedBox(width: 8),
                 GestureDetector(
-                  onTap: _copyInviteCode,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: _codeCopied
-                        ? const Icon(
-                            Icons.check_circle_rounded,
-                            color: AppColors.success,
-                            size: 20,
-                            key: ValueKey('check'),
+                  onTap: _generatingCode ? null : _generateInviteCode,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: _generatingCode
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                           )
-                        : const Icon(Icons.copy_rounded, color: AppColors.primary, size: 20, key: ValueKey('copy')),
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.refresh_rounded, color: Colors.white, size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                hasCode ? 'Regenerate' : 'Generate',
+                                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
               ],
-            ),
+            ],
           ),
-          if (_codeCopied) ...[
+
+          if (!hasCode && isAdmin) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: AppColors.primaryXLight,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.info_outline_rounded, color: AppColors.primary, size: 16),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'No invite code yet. Tap "Generate" to create one for your family.',
+                      style: TextStyle(fontSize: 12, color: AppColors.primary, height: 1.5),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ] else if (hasCode) ...[
+            const SizedBox(height: 14),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.background,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isExpired ? AppColors.error.withValues(alpha: 0.4) : AppColors.divider,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      code,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontFamily: 'monospace',
+                        color: isExpired ? AppColors.textSecondary : AppColors.textPrimary,
+                        letterSpacing: 0.5,
+                        decoration: isExpired ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: isExpired ? null : _copyInviteCode,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: _codeCopied
+                          ? const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20, key: ValueKey('check'))
+                          : Icon(
+                              Icons.copy_rounded,
+                              color: isExpired ? AppColors.textSecondary : AppColors.primary,
+                              size: 20,
+                              key: const ValueKey('copy'),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 8),
-            const Text(
-              'Copied to clipboard!',
-              style: TextStyle(fontSize: 12, color: AppColors.success, fontWeight: FontWeight.w500),
+            Row(
+              children: [
+                if (_codeCopied) ...[
+                  const Icon(Icons.check_rounded, color: AppColors.success, size: 13),
+                  const SizedBox(width: 4),
+                  const Text(
+                    'Copied to clipboard!',
+                    style: TextStyle(fontSize: 12, color: AppColors.success, fontWeight: FontWeight.w500),
+                  ),
+                ] else if (expiryLabel.isNotEmpty) ...[
+                  Icon(
+                    isExpired ? Icons.timer_off_rounded : Icons.timer_rounded,
+                    size: 13,
+                    color: isExpired ? AppColors.error : AppColors.textSecondary,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    expiryLabel,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isExpired ? AppColors.error : AppColors.textSecondary,
+                      fontWeight: isExpired ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ],

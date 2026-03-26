@@ -1,4 +1,6 @@
+import 'package:cartsync/features/family/domain/usecases/generate_invite_code_usecase.dart';
 import 'package:cartsync/features/family/domain/usecases/get_all_family_usecase.dart';
+import 'package:cartsync/features/family/domain/usecases/join_family_usecase.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:cartsync/features/family/data/models/family_model.dart';
@@ -16,6 +18,8 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
   final AddFamilyMemberUsecase addFamilyMemberUsecase;
   final GetFamilyMembersUsecase getFamilyMembersUsecase;
   final GetAllFamilyUsecase getAllFamilyUsecase;
+  final GenerateInviteCodeUsecase generateInviteCodeUsecase;
+  final JoinFamilyUsecase joinFamilyUsecase;
 
   FamilyNotifier(
     this.ref,
@@ -24,6 +28,8 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
     this.addFamilyMemberUsecase,
     this.getFamilyMembersUsecase,
     this.getAllFamilyUsecase,
+    this.generateInviteCodeUsecase,
+    this.joinFamilyUsecase,
   ) : super(FamilyPageInitial());
 
   Future<bool> createFamily(String name, String adminId) async {
@@ -78,6 +84,36 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
       },
     );
   }
+
+  Future<FamilyModel?> generateInviteCode(String familyId) async {
+    state = state.copyWith(isLoading: true);
+    final result = await generateInviteCodeUsecase(familyId);
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
+        return null;
+      },
+      (updatedFamily) {
+        state = state.copyWith(isLoading: false, family: updatedFamily);
+        return updatedFamily;
+      },
+    );
+  }
+
+  Future<bool> joinFamily(String inviteCode, String userId) async {
+    state = state.copyWith(isLoading: true);
+    final result = await joinFamilyUsecase(inviteCode, userId);
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
+        return false;
+      },
+      (_) {
+        state = state.copyWith(isLoading: false);
+        return true;
+      },
+    );
+  }
 }
 
 final familyNotifierProvider = StateNotifierProvider<FamilyNotifier, FamilyPageModel>((ref) {
@@ -88,5 +124,7 @@ final familyNotifierProvider = StateNotifierProvider<FamilyNotifier, FamilyPageM
     ref.watch(addFamilyMemberUsecaseProvider),
     ref.watch(getFamilyMembersUsecaseProvider),
     ref.watch(GetAllFamilyUsecaseProvider),
+    ref.watch(generateInviteCodeUsecaseProvider),
+    ref.watch(joinFamilyUsecaseProvider),
   );
 });

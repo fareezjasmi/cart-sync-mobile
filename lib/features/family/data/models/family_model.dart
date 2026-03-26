@@ -9,6 +9,8 @@ abstract class FamilyModel with _$FamilyModel {
     @JsonKey(name: 'family_id') String? familyId,
     @JsonKey(name: 'admin_id') String? adminId,
     String? name,
+    @JsonKey(name: 'invite_code') String? inviteCode,
+    @JsonKey(name: 'invite_code_expiry') String? inviteCodeExpiry,
     @JsonKey(name: 'date_created') String? dateCreated,
     @JsonKey(name: 'last_updated') String? lastUpdated,
     bool? isAdmin,

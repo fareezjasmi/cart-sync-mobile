@@ -67,6 +67,28 @@ class FamilyRepositoryImpl implements FamilyRepository {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to get members'));
     }
   }
+
+  @override
+  Future<Either<Failure, FamilyModel>> generateInviteCode(String familyId) async {
+    try {
+      return Right(await datasource.generateInviteCode(familyId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to generate invite code'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, FamilyRelationshipModel>> joinFamily(String inviteCode, String userId) async {
+    try {
+      return Right(await datasource.joinFamily(inviteCode, userId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to join family'));
+    }
+  }
 }
 
 final familyRepositoryProvider = Provider<FamilyRepository>((ref) {

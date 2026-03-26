@@ -1,3 +1,4 @@
+import 'package:cartsync/features/family/presentation/pages/join_family_sheet.dart';
 import 'package:cartsync/utils/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,18 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
     if (userId != null && userId.isNotEmpty) {
       ref.read(familyNotifierProvider.notifier).loadFamily(userId);
     }
+  }
+
+  void _showJoinSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => JoinFamilySheet(onJoined: _loadFamily),
+    );
   }
 
   @override
@@ -82,10 +95,24 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: () => Navigator.pushNamed(context, '/create-family'),
-                      icon: const Icon(Icons.add_rounded, size: 20),
-                      label: const Text('Create New Family'),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => Navigator.pushNamed(context, '/create-family'),
+                            icon: const Icon(Icons.add_rounded, size: 18),
+                            label: const Text('New Family'),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _showJoinSheet,
+                            icon: const Icon(Icons.group_add_rounded, size: 18),
+                            label: const Text('Join Family'),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 );
@@ -125,10 +152,20 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
             ),
             const SizedBox(height: 28),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
-              child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/create-family'),
-                child: const Text('Create Family'),
+              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 30),
+              child: Column(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamed(context, '/create-family'),
+                    child: const Text('Create Family'),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _showJoinSheet,
+                    icon: const Icon(Icons.group_add_rounded, size: 18),
+                    label: const Text('Join with Invite Code'),
+                  ),
+                ],
               ),
             ),
           ],
