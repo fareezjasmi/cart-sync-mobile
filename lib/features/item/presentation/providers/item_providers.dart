@@ -66,8 +66,10 @@ class ItemNotifier extends StateNotifier<ItemPageModel> {
           return false;
         },
         (i) {
-          final updated = List<ItemModel>.from(state.items)..add(i);
-          state = state.copyWith(items: updated);
+          final alreadyExists = state.items.any((existing) => existing.itemId == i.itemId);
+          if (!alreadyExists) {
+            state = state.copyWith(items: [...state.items, i]);
+          }
           return true;
         },
       );

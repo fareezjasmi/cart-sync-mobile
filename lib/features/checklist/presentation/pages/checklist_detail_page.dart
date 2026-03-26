@@ -40,18 +40,18 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
       onItemEvent: (event) {
         if (!mounted) return;
         ref.read(itemNotifierProvider.notifier).handleWsEvent(event);
-        _showEventToast(event['type'] as String? ?? 'update');
+        _showEventToast(event['type'] as String? ?? 'update', event['item']['name'].toString());
       },
       onPresenceEvent: (_) {},
     );
   }
 
-  void _showEventToast(String eventType) {
+  void _showEventToast(String eventType, String item) {
     final (String label, Color color) = switch (eventType) {
-      'ITEM_ADDED' => ('Item added', const Color(0xFF4CAF50)),
-      'ITEM_BOUGHT' => ('Item marked as bought', const Color(0xFF4CAF50)),
-      'ITEM_UPDATED' => ('Item updated', AppColors.warning),
-      'ITEM_DELETED' => ('Item deleted', AppColors.error),
+      'ITEM_ADDED' => ('Item added: $item', const Color(0xFF4CAF50)),
+      'ITEM_BOUGHT' => ('$item marked as bought', const Color(0xFF4CAF50)),
+      'ITEM_UPDATED' => ('$item unchecked', AppColors.warning),
+      'ITEM_DELETED' => ('$item deleted', AppColors.error),
       _ => ('Item changed', AppColors.textSecondary),
     };
 
