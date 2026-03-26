@@ -45,10 +45,7 @@ class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
   @override
   Future<FamilyRelationshipModel> addMember(String familyId, String userId) async {
     try {
-      final response = await dio.post('/family/addMember', data: {
-        'family_id': familyId,
-        'user_id': userId,
-      });
+      final response = await dio.post('/family/addMember', data: {'family_id': familyId, 'user_id': userId});
       return FamilyRelationshipModel.fromJson(response.data as Map<String, Object?>);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
@@ -59,25 +56,21 @@ class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
   @override
   Future<List<FamilyRelationshipModel>> getFamilyMembers(String familyId) async {
     try {
-      final response = await dio.get('/family/$familyId');
+      final response = await dio.get('/family/getMembers/$familyId');
       final List<dynamic> data = response.data as List<dynamic>;
-      return data
-          .map((e) => FamilyRelationshipModel.fromJson(e as Map<String, Object?>))
-          .toList();
+      return data.map((e) => FamilyRelationshipModel.fromJson(e as Map<String, Object?>)).toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);
     }
   }
-  
+
   @override
   Future<List<FamilyModel>> getAllFamily(String userId) async {
     try {
       final response = await dio.get('/family/user/$userId');
       final List<dynamic> data = response.data as List<dynamic>;
-      return data
-          .map((e) => FamilyModel.fromJson(e as Map<String, Object?>))
-          .toList();
+      return data.map((e) => FamilyModel.fromJson(e as Map<String, Object?>)).toList();
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

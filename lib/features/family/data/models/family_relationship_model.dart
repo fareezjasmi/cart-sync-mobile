@@ -8,8 +8,8 @@ abstract class FamilyRelationshipModel with _$FamilyRelationshipModel {
   const factory FamilyRelationshipModel({
     @JsonKey(name: 'user_id') String? userId,
     @JsonKey(name: 'family_id') String? familyId,
+    @JsonKey(name: 'member_name') String? memberName,
   }) = _FamilyRelationshipModel;
 
-  factory FamilyRelationshipModel.fromJson(Map<String, Object?> json) =>
-      _$FamilyRelationshipModelFromJson(json);
+  factory FamilyRelationshipModel.fromJson(Map<String, Object?> json) => _$FamilyRelationshipModelFromJson(json);
 }

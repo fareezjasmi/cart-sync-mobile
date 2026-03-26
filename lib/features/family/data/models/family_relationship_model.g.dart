@@ -11,6 +11,7 @@ _FamilyRelationshipModel _$FamilyRelationshipModelFromJson(
 ) => _FamilyRelationshipModel(
   userId: json['user_id'] as String?,
   familyId: json['family_id'] as String?,
+  memberName: json['member_name'] as String?,
 );
 
 Map<String, dynamic> _$FamilyRelationshipModelToJson(
@@ -18,4 +19,5 @@ Map<String, dynamic> _$FamilyRelationshipModelToJson(
 ) => <String, dynamic>{
   'user_id': instance.userId,
   'family_id': instance.familyId,
+  'member_name': instance.memberName,
 };

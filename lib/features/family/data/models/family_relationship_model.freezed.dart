@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FamilyRelationshipModel {
 
-@JsonKey(name: 'user_id') String? get userId;@JsonKey(name: 'family_id') String? get familyId;
+@JsonKey(name: 'user_id') String? get userId;@JsonKey(name: 'family_id') String? get familyId;@JsonKey(name: 'member_name') String? get memberName;
 /// Create a copy of FamilyRelationshipModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FamilyRelationshipModelCopyWith<FamilyRelationshipModel> get copyWith => _$Fami
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FamilyRelationshipModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.familyId, familyId) || other.familyId == familyId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FamilyRelationshipModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.memberName, memberName) || other.memberName == memberName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,familyId);
+int get hashCode => Object.hash(runtimeType,userId,familyId,memberName);
 
 @override
 String toString() {
-  return 'FamilyRelationshipModel(userId: $userId, familyId: $familyId)';
+  return 'FamilyRelationshipModel(userId: $userId, familyId: $familyId, memberName: $memberName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FamilyRelationshipModelCopyWith<$Res>  {
   factory $FamilyRelationshipModelCopyWith(FamilyRelationshipModel value, $Res Function(FamilyRelationshipModel) _then) = _$FamilyRelationshipModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'family_id') String? familyId
+@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'member_name') String? memberName
 });
 
 
@@ -65,10 +65,11 @@ class _$FamilyRelationshipModelCopyWithImpl<$Res>
 
 /// Create a copy of FamilyRelationshipModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = freezed,Object? familyId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = freezed,Object? familyId = freezed,Object? memberName = freezed,}) {
   return _then(_self.copyWith(
 userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String?,familyId: freezed == familyId ? _self.familyId : familyId // ignore: cast_nullable_to_non_nullable
+as String?,memberName: freezed == memberName ? _self.memberName : memberName // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'family_id')  String? familyId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'member_name')  String? memberName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FamilyRelationshipModel() when $default != null:
-return $default(_that.userId,_that.familyId);case _:
+return $default(_that.userId,_that.familyId,_that.memberName);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.userId,_that.familyId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'family_id')  String? familyId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'member_name')  String? memberName)  $default,) {final _that = this;
 switch (_that) {
 case _FamilyRelationshipModel():
-return $default(_that.userId,_that.familyId);case _:
+return $default(_that.userId,_that.familyId,_that.memberName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +196,10 @@ return $default(_that.userId,_that.familyId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'family_id')  String? familyId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'user_id')  String? userId, @JsonKey(name: 'family_id')  String? familyId, @JsonKey(name: 'member_name')  String? memberName)?  $default,) {final _that = this;
 switch (_that) {
 case _FamilyRelationshipModel() when $default != null:
-return $default(_that.userId,_that.familyId);case _:
+return $default(_that.userId,_that.familyId,_that.memberName);case _:
   return null;
 
 }
@@ -210,11 +211,12 @@ return $default(_that.userId,_that.familyId);case _:
 @JsonSerializable()
 
 class _FamilyRelationshipModel implements FamilyRelationshipModel {
-  const _FamilyRelationshipModel({@JsonKey(name: 'user_id') this.userId, @JsonKey(name: 'family_id') this.familyId});
+  const _FamilyRelationshipModel({@JsonKey(name: 'user_id') this.userId, @JsonKey(name: 'family_id') this.familyId, @JsonKey(name: 'member_name') this.memberName});
   factory _FamilyRelationshipModel.fromJson(Map<String, dynamic> json) => _$FamilyRelationshipModelFromJson(json);
 
 @override@JsonKey(name: 'user_id') final  String? userId;
 @override@JsonKey(name: 'family_id') final  String? familyId;
+@override@JsonKey(name: 'member_name') final  String? memberName;
 
 /// Create a copy of FamilyRelationshipModel
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FamilyRelationshipModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.familyId, familyId) || other.familyId == familyId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FamilyRelationshipModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.familyId, familyId) || other.familyId == familyId)&&(identical(other.memberName, memberName) || other.memberName == memberName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,familyId);
+int get hashCode => Object.hash(runtimeType,userId,familyId,memberName);
 
 @override
 String toString() {
-  return 'FamilyRelationshipModel(userId: $userId, familyId: $familyId)';
+  return 'FamilyRelationshipModel(userId: $userId, familyId: $familyId, memberName: $memberName)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$FamilyRelationshipModelCopyWith<$Res> implements $FamilyR
   factory _$FamilyRelationshipModelCopyWith(_FamilyRelationshipModel value, $Res Function(_FamilyRelationshipModel) _then) = __$FamilyRelationshipModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'family_id') String? familyId
+@JsonKey(name: 'user_id') String? userId,@JsonKey(name: 'family_id') String? familyId,@JsonKey(name: 'member_name') String? memberName
 });
 
 
@@ -266,10 +268,11 @@ class __$FamilyRelationshipModelCopyWithImpl<$Res>
 
 /// Create a copy of FamilyRelationshipModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = freezed,Object? familyId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = freezed,Object? familyId = freezed,Object? memberName = freezed,}) {
   return _then(_FamilyRelationshipModel(
 userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String?,familyId: freezed == familyId ? _self.familyId : familyId // ignore: cast_nullable_to_non_nullable
+as String?,memberName: freezed == memberName ? _self.memberName : memberName // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
