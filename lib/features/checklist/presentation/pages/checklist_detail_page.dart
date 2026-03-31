@@ -143,23 +143,34 @@ class _ChecklistDetailPageState extends ConsumerState<ChecklistDetailPage> {
                       ),
                     ),
                     // Live indicator
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _PulsingDot(color: const Color(0xFFA5D6A7)),
-                          const SizedBox(width: 5),
-                          const Text(
-                            'Live',
-                            style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                    ValueListenableBuilder<bool>(
+                      valueListenable: _wsService.connectionStatus,
+                      builder: (context, isConnected, _) {
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(20),
                           ),
-                        ],
-                      ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              isConnected
+                                  ? _PulsingDot(color: const Color(0xFFA5D6A7))
+                                  : const Icon(Icons.wifi_off_rounded, size: 11, color: Color(0xFFFFCC80)),
+                              const SizedBox(width: 5),
+                              Text(
+                                isConnected ? 'Live' : 'Reconnecting...',
+                                style: TextStyle(
+                                  color: isConnected ? Colors.white : const Color(0xFFFFCC80),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

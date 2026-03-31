@@ -6,6 +6,7 @@ const String _wsBaseUrl = 'ws://195.201.17.91/ws-native';
 
 class WebSocketService {
   StompClient? _client;
+  final ValueNotifier<bool> connectionStatus = ValueNotifier(false);
 
   void connect({
     required String token,
@@ -18,6 +19,7 @@ class WebSocketService {
         url: '$_wsBaseUrl?token=$token',
         onConnect: (frame) {
           debugPrint('[WS] Connected');
+          connectionStatus.value = true;
           _client!.subscribe(
             destination: '/topic/family.$familyId/items',
             callback: (frame) {
@@ -35,10 +37,19 @@ class WebSocketService {
             },
           );
         },
-        onStompError: (frame) => debugPrint('[WS] STOMP error: ${frame.body}'),
-        onWebSocketError: (error) => debugPrint('[WS] WebSocket error: $error'),
-        onDisconnect: (_) => debugPrint('[WS] Disconnected'),
-        reconnectDelay: Duration.zero, // no auto-reconnect during testing
+        onStompError: (frame) {
+          debugPrint('[WS] STOMP error: ${frame.body}');
+          connectionStatus.value = false;
+        },
+        onWebSocketError: (error) {
+          debugPrint('[WS] WebSocket error: $error');
+          connectionStatus.value = false;
+        },
+        onDisconnect: (_) {
+          debugPrint('[WS] Disconnected');
+          connectionStatus.value = false;
+        },
+        reconnectDelay: const Duration(seconds: 5),
       ),
     );
     _client!.activate();
@@ -47,5 +58,6 @@ class WebSocketService {
   void disconnect() {
     _client?.deactivate();
     _client = null;
+    connectionStatus.value = false;
   }
 }
