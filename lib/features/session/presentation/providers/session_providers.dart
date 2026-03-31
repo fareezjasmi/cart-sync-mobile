@@ -126,15 +126,20 @@ class SessionNotifier extends StateNotifier<SessionPageModel> {
     );
   }
 
-  Future<void> deleteSession(String sessionId) async {
-    try {
-      state = state.copyWith(isLoading: true);
-      final response = await deleteSessionUsecase(sessionId);
-    } catch (e) {
-      throw Exception(e);
-    } finally {
-      state = state.copyWith(isLoading: false);
-    }
+  Future<bool> deleteSession(String sessionId) async {
+    state = state.copyWith(isLoading: true);
+    final result = await deleteSessionUsecase(sessionId);
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
+        return false;
+      },
+      (_) {
+        final updated = (state.allSession ?? []).where((s) => s.sessionId != sessionId).toList();
+        state = state.copyWith(isLoading: false, allSession: updated);
+        return true;
+      },
+    );
   }
 }
 

@@ -15,6 +15,7 @@ abstract class FamilyRemoteDatasource {
   Future<List<FamilyRelationshipModel>> getFamilyMembers(String familyId);
   Future<FamilyModel> generateInviteCode(String familyId);
   Future<FamilyRelationshipModel> joinFamily(String inviteCode, String userId);
+  Future<Map<String, dynamic>> deleteFamily(String familyId);
 }
 
 class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
@@ -95,6 +96,17 @@ class FamilyRemoteDatasourceImpl implements FamilyRemoteDatasource {
     try {
       final response = await dio.post('/family/join', data: {'invite_code': inviteCode, 'user_id': userId});
       return FamilyRelationshipModel.fromJson(response.data as Map<String, Object?>);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) throw UnauthorizedException();
+      throw ServerException(message: e.message);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> deleteFamily(String familyId) async {
+    try {
+      await dio.delete('/family/delete/$familyId');
+      return {};
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

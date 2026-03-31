@@ -48,7 +48,7 @@ class AuthErrorInterceptor extends Interceptor {
     final statusCode = err.response?.statusCode;
 
     // Invalid / expired token – auto-logout
-    if ((statusCode == 401 || statusCode == 403) && !_isLoggingOut) {
+    if (statusCode == 401 && !_isLoggingOut) {
       _isLoggingOut = true;
       _log.w('[AUTH] Token invalid or expired ($statusCode) – logging out');
       await onUnauthorized();

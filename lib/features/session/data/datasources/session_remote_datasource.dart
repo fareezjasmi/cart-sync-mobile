@@ -90,8 +90,8 @@ class SessionRemoteDatasourceImpl implements SessionRemoteDatasource {
   @override
   Future<Map<String, dynamic>> deleteSession(String sessionId) async {
     try {
-      final response = await dio.delete('/session/delete/$sessionId');
-      return response.data as Map<String, dynamic>;
+      await dio.delete('/session/delete/$sessionId');
+      return {};
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) throw UnauthorizedException();
       throw ServerException(message: e.message);

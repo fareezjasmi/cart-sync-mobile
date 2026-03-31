@@ -102,11 +102,13 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
             onPressed: () => Navigator.pop(context),
           ),
           actions: [
-            if (session != null && !isInactive && widget.isAdmin != null && widget.isAdmin != false)
+            if (session != null && widget.isAdmin != null && widget.isAdmin != false)
               PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'end') {
                     _showCloseSessionSheet();
+                  } else if (value == 'delete') {
+                    _confirmDeleteSession();
                   } else {
                     _updateStatus(value);
                   }
@@ -114,7 +116,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                 icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 itemBuilder: (_) => [
-                  if (session.sessionStatus != 'PAUSED')
+                  if (!isInactive && session.sessionStatus != 'PAUSED')
                     const PopupMenuItem(
                       value: 'PAUSED',
                       child: Row(
@@ -125,7 +127,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                         ],
                       ),
                     ),
-                  if (session.sessionStatus == 'PAUSED')
+                  if (!isInactive && session.sessionStatus == 'PAUSED')
                     const PopupMenuItem(
                       value: 'ACTIVE',
                       child: Row(
@@ -136,14 +138,27 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                         ],
                       ),
                     ),
+                  if (!isInactive) ...[
+                    const PopupMenuDivider(),
+                    const PopupMenuItem(
+                      value: 'end',
+                      child: Row(
+                        children: [
+                          Icon(Icons.stop_rounded, color: Color(0xFFC62828), size: 20),
+                          SizedBox(width: 10),
+                          Text('End session', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
+                        ],
+                      ),
+                    ),
+                  ],
                   const PopupMenuDivider(),
                   const PopupMenuItem(
-                    value: 'end',
+                    value: 'delete',
                     child: Row(
                       children: [
-                        Icon(Icons.stop_rounded, color: Color(0xFFC62828), size: 20),
+                        Icon(Icons.delete_outline_rounded, color: Color(0xFFC62828), size: 20),
                         SizedBox(width: 10),
-                        Text('End session', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
+                        Text('Delete session', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
                       ],
                     ),
                   ),
@@ -159,7 +174,7 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
               ),
-        body: sessionState.isLoading && session == null
+        body: sessionState.isLoading
             ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
             : RefreshIndicator(
                 onRefresh: () async {
@@ -434,6 +449,32 @@ class _SessionDetailPageState extends ConsumerState<SessionDetailPage> {
 
   Future<void> _updateStatus(String status) async {
     await ref.read(sessionNotifierProvider.notifier).updateStatus(widget.sessionId, status);
+  }
+
+  Future<void> _confirmDeleteSession() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Delete Session?', style: TextStyle(fontWeight: FontWeight.w700)),
+        content: const Text(
+          'This will permanently delete the session and all its checklists. This action cannot be undone.',
+          style: TextStyle(fontSize: 13, height: 1.5),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: const Color(0xFFC62828)),
+            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      final success = await ref.read(sessionNotifierProvider.notifier).deleteSession(widget.sessionId);
+      if (success && mounted) Navigator.pop(context);
+    }
   }
 
   void _showCloseSessionSheet() {
@@ -816,7 +857,7 @@ class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderState
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _animation,
-      builder: (_, __) => Opacity(
+      builder: (context, child) => Opacity(
         opacity: _animation.value,
         child: Container(
           width: 7,

@@ -1,3 +1,4 @@
+import 'package:cartsync/features/family/domain/usecases/delete_family_usecase.dart';
 import 'package:cartsync/features/family/domain/usecases/generate_invite_code_usecase.dart';
 import 'package:cartsync/features/family/domain/usecases/get_all_family_usecase.dart';
 import 'package:cartsync/features/family/domain/usecases/join_family_usecase.dart';
@@ -20,6 +21,7 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
   final GetAllFamilyUsecase getAllFamilyUsecase;
   final GenerateInviteCodeUsecase generateInviteCodeUsecase;
   final JoinFamilyUsecase joinFamilyUsecase;
+  final DeleteFamilyUsecase deleteFamilyUsecase;
 
   FamilyNotifier(
     this.ref,
@@ -30,6 +32,7 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
     this.getAllFamilyUsecase,
     this.generateInviteCodeUsecase,
     this.joinFamilyUsecase,
+    this.deleteFamilyUsecase,
   ) : super(FamilyPageInitial());
 
   Future<bool> createFamily(String name, String adminId) async {
@@ -114,6 +117,22 @@ class FamilyNotifier extends StateNotifier<FamilyPageModel> {
       },
     );
   }
+
+  Future<bool> deleteFamily(String familyId) async {
+    state = state.copyWith(isLoading: true);
+    final result = await deleteFamilyUsecase(familyId);
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, errorMessage: failure.errorMessage);
+        return false;
+      },
+      (_) {
+        final updated = (state.familyList ?? []).where((f) => f.familyId != familyId).toList();
+        state = state.copyWith(isLoading: false, familyList: updated);
+        return true;
+      },
+    );
+  }
 }
 
 final familyNotifierProvider = StateNotifierProvider<FamilyNotifier, FamilyPageModel>((ref) {
@@ -126,5 +145,6 @@ final familyNotifierProvider = StateNotifierProvider<FamilyNotifier, FamilyPageM
     ref.watch(GetAllFamilyUsecaseProvider),
     ref.watch(generateInviteCodeUsecaseProvider),
     ref.watch(joinFamilyUsecaseProvider),
+    ref.watch(deleteFamilyUsecaseProvider),
   );
 });

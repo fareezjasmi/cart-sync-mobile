@@ -89,6 +89,17 @@ class FamilyRepositoryImpl implements FamilyRepository {
       return Left(ServerError(errorMessage: e.message ?? 'Failed to join family'));
     }
   }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> deleteFamily(String familyId) async {
+    try {
+      return Right(await datasource.deleteFamily(familyId));
+    } on UnauthorizedException {
+      return Left(UnauthorizedError());
+    } on ServerException catch (e) {
+      return Left(ServerError(errorMessage: e.message ?? 'Failed to delete family'));
+    }
+  }
 }
 
 final familyRepositoryProvider = Provider<FamilyRepository>((ref) {

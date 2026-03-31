@@ -56,6 +56,36 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
     if (mounted) setState(() => _codeCopied = false);
   }
 
+  Future<void> _confirmDeleteFamily() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Delete Family?', style: TextStyle(fontWeight: FontWeight.w700)),
+        content: const Text(
+          'This will permanently delete the family and all associated data. This action cannot be undone.',
+          style: TextStyle(fontSize: 13, height: 1.5),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: const Color(0xFFC62828)),
+            child: const Text('Delete', style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      final familyId = widget.familyModel.familyId ?? '';
+      final success = await ref.read(familyNotifierProvider.notifier).deleteFamily(familyId);
+      if (success && mounted) Navigator.pop(context);
+    }
+  }
+
   Future<void> _generateInviteCode() async {
     final familyId = widget.familyModel.familyId ?? '';
     if (familyId.isEmpty) return;
@@ -104,18 +134,34 @@ class _FamilyDetailsPageState extends ConsumerState<FamilyDetailsPage> {
               onPressed: () => Navigator.pop(context),
             ),
             actions: [
-              IconButton(
-                icon: Container(
-                  width: 34,
-                  height: 34,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
+              if (widget.familyModel.isAdmin == true)
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'delete') _confirmDeleteFamily();
+                  },
+                  icon: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.more_vert_rounded, size: 18),
                   ),
-                  child: const Icon(Icons.more_vert_rounded, size: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete_outline_rounded, color: Color(0xFFC62828), size: 20),
+                          SizedBox(width: 10),
+                          Text('Delete family', style: TextStyle(fontSize: 14, color: Color(0xFFC62828))),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed: () {},
-              ),
               const SizedBox(width: 8),
             ],
             flexibleSpace: FlexibleSpaceBar(
