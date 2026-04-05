@@ -33,9 +33,7 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => JoinFamilySheet(onJoined: _loadFamily),
     );
   }
@@ -46,24 +44,7 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('My Families'),
-        actions: [
-          IconButton(
-            icon: Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.search_rounded, size: 18),
-            ),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
+      appBar: AppBar(title: const Text('My Families')),
       body: Stack(
         children: [
           RefreshIndicator(
@@ -157,11 +138,13 @@ class _FamilyPageState extends ConsumerState<FamilyPage> {
                 children: [
                   ElevatedButton(
                     onPressed: () => Navigator.pushNamed(context, '/create-family'),
+                    style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15)),
                     child: const Text('Create Family'),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
                     onPressed: _showJoinSheet,
+                    style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 15)),
                     icon: const Icon(Icons.group_add_rounded, size: 18),
                     label: const Text('Join with Invite Code'),
                   ),
