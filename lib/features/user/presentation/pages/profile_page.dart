@@ -157,15 +157,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       _buildSectionLabel('Account'),
                       const SizedBox(height: 8),
                       _buildCard([
-                        _buildSettingsRow(
-                          icon: Icons.person_outline_rounded,
-                          iconBg: AppColors.primaryXLight,
-                          iconColor: AppColors.primary,
-                          title: 'Edit Profile',
-                          subtitle: 'Change display name',
-                          onTap: () => _showEditProfileSheet(context, displayName),
-                        ),
-                        _buildDivider(),
+                        // _buildSettingsRow(
+                        //   icon: Icons.person_outline_rounded,
+                        //   iconBg: AppColors.primaryXLight,
+                        //   iconColor: AppColors.primary,
+                        //   title: 'Edit Profile',
+                        //   subtitle: 'Change display name',
+                        //   onTap: () => _showEditProfileSheet(context, displayName),
+                        // ),
+                        // _buildDivider(),
                         _buildSettingsRow(
                           icon: Icons.bar_chart_rounded,
                           iconBg: AppColors.primaryXLight,
@@ -177,30 +177,30 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       ]),
                       const SizedBox(height: 20),
 
-                      // Preferences section
-                      _buildSectionLabel('Preferences'),
-                      const SizedBox(height: 8),
-                      _buildCard([
-                        _buildSettingsRow(
-                          icon: Icons.notifications_outlined,
-                          iconBg: AppColors.primaryXLight,
-                          iconColor: AppColors.primary,
-                          title: 'Notifications',
-                          subtitle: 'Item updates, session alerts',
-                          trailing: _buildToggle(true),
-                          onTap: () {},
-                        ),
-                        _buildDivider(),
-                        _buildSettingsRow(
-                          icon: Icons.settings_outlined,
-                          iconBg: AppColors.primaryXLight,
-                          iconColor: AppColors.primary,
-                          title: 'App Settings',
-                          subtitle: 'Theme, language & more',
-                          onTap: () {},
-                        ),
-                      ]),
-                      const SizedBox(height: 20),
+                      // // Preferences section
+                      // _buildSectionLabel('Preferences'),
+                      // const SizedBox(height: 8),
+                      // _buildCard([
+                      //   _buildSettingsRow(
+                      //     icon: Icons.notifications_outlined,
+                      //     iconBg: AppColors.primaryXLight,
+                      //     iconColor: AppColors.primary,
+                      //     title: 'Notifications',
+                      //     subtitle: 'Item updates, session alerts',
+                      //     trailing: _buildToggle(true),
+                      //     onTap: () {},
+                      //   ),
+                      //   _buildDivider(),
+                      //   _buildSettingsRow(
+                      //     icon: Icons.settings_outlined,
+                      //     iconBg: AppColors.primaryXLight,
+                      //     iconColor: AppColors.primary,
+                      //     title: 'App Settings',
+                      //     subtitle: 'Theme, language & more',
+                      //     onTap: () {},
+                      //   ),
+                      // ]),
+                      // const SizedBox(height: 20),
 
                       // Sign out
                       _buildCard([
@@ -252,23 +252,23 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800),
                     ),
                   ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: GestureDetector(
-                      onTap: () => _showEditProfileSheet(context, displayName),
-                      child: Container(
-                        width: 28,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.primary, width: 2),
-                        ),
-                        child: const Icon(Icons.edit_rounded, size: 14, color: AppColors.primary),
-                      ),
-                    ),
-                  ),
+                  // Positioned(
+                  //   bottom: 0,
+                  //   right: 0,
+                  //   child: GestureDetector(
+                  //     onTap: () => _showEditProfileSheet(context, displayName),
+                  //     child: Container(
+                  //       width: 28,
+                  //       height: 28,
+                  //       decoration: BoxDecoration(
+                  //         color: Colors.white,
+                  //         shape: BoxShape.circle,
+                  //         border: Border.all(color: AppColors.primary, width: 2),
+                  //       ),
+                  //       child: const Icon(Icons.edit_rounded, size: 14, color: AppColors.primary),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 14),
