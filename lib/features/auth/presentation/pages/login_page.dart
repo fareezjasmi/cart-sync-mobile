@@ -93,12 +93,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                           const SizedBox(height: 10),
                           Align(
                             alignment: Alignment.centerRight,
-                            child: Text(
-                              'Forgot password?',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
+                            child: GestureDetector(
+                              onTap: () => Navigator.pushNamed(context, '/forgot-password'),
+                              child: const Text(
+                                'Forgot password?',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
                           ),

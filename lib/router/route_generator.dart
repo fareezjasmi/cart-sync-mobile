@@ -1,3 +1,5 @@
+import 'package:cartsync/features/auth/presentation/pages/forgot_password_page.dart';
+import 'package:cartsync/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:cartsync/features/family/data/models/family_model.dart';
 import 'package:cartsync/features/family/presentation/pages/family_details_page.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,13 @@ class RouteGenerator {
 
       case '/register':
         return MaterialPageRoute(builder: (_) => const RegisterPage());
+
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordPage());
+
+      case '/reset-password':
+        final email = settings.arguments as String;
+        return MaterialPageRoute(builder: (_) => ResetPasswordPage(email: email));
 
       case '/create-family':
         return MaterialPageRoute(builder: (_) => const CreateFamilyPage());
