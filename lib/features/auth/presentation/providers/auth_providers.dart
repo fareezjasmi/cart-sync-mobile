@@ -33,9 +33,9 @@ class AuthNotifier extends StateNotifier<AuthPageModel> {
     );
   }
 
-  Future<bool> register(String username, String password) async {
+  Future<bool> register(String username, String email, String password) async {
     state = state.copyWith(isLoading: true);
-    final request = LoginRequestModel(username: username, password: password);
+    final request = LoginRequestModel(username: username, email: email, password: password);
     final result = await registerUsecase(request);
     return result.fold(
       (failure) {

@@ -15,6 +15,7 @@ class RegisterPage extends ConsumerStatefulWidget {
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
   final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -24,6 +25,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   @override
   void dispose() {
     _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -33,7 +35,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     if (!_formKey.currentState!.validate()) return;
     final success = await ref
         .read(authNotifierProvider.notifier)
-        .register(_usernameController.text.trim(), _passwordController.text.trim());
+        .register(_usernameController.text.trim(), _emailController.text.trim(), _passwordController.text.trim());
     if (success && mounted) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil('/main', (_) => false);
     }
@@ -88,6 +90,20 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             textInputAction: TextInputAction.next,
                             decoration: const InputDecoration(hintText: 'Choose a username'),
                             validator: (v) => v == null || v.isEmpty ? 'Enter username' : null,
+                          ),
+                          const SizedBox(height: 14),
+                          _buildLabel('Email'),
+                          const SizedBox(height: 6),
+                          TextFormField(
+                            controller: _emailController,
+                            textInputAction: TextInputAction.next,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: const InputDecoration(hintText: 'Enter your email'),
+                            validator: (v) {
+                              if (v == null || v.isEmpty) return 'Enter email';
+                              if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(v)) return 'Enter a valid email';
+                              return null;
+                            },
                           ),
                           const SizedBox(height: 14),
                           _buildLabel('Password'),
@@ -158,11 +174,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 onTap: () => Navigator.pop(context),
                                 child: const Text(
                                   'Sign In',
-                                  style: TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14,
-                                  ),
+                                  style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700, fontSize: 14),
                                 ),
                               ),
                             ],
@@ -183,6 +195,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   Widget _buildHero() {
     return Container(
+      width: double.maxFinite,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -195,13 +208,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         child: Stack(
           children: [
             Positioned(
-              top: -40, right: -30,
+              top: -40,
+              right: -30,
               child: Container(
-                width: 160, height: 160,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.06),
-                ),
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withValues(alpha: 0.06)),
               ),
             ),
             Padding(
@@ -212,7 +224,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
                     child: Container(
-                      width: 36, height: 36,
+                      width: 36,
+                      height: 36,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.white.withValues(alpha: 0.15),

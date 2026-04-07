@@ -8,6 +8,7 @@ abstract class LoginRequestModel with _$LoginRequestModel {
   const factory LoginRequestModel({
     required String username,
     required String password,
+    String? email,
     String? status,
   }) = _LoginRequestModel;
 

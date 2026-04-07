@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LoginRequestModel {
 
- String get username; String get password; String? get status;
+ String get username; String get password; String? get email; String? get status;
 /// Create a copy of LoginRequestModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $LoginRequestModelCopyWith<LoginRequestModel> get copyWith => _$LoginRequestMode
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginRequestModel&&(identical(other.username, username) || other.username == username)&&(identical(other.password, password) || other.password == password)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginRequestModel&&(identical(other.username, username) || other.username == username)&&(identical(other.password, password) || other.password == password)&&(identical(other.email, email) || other.email == email)&&(identical(other.status, status) || other.status == status));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,username,password,status);
+int get hashCode => Object.hash(runtimeType,username,password,email,status);
 
 @override
 String toString() {
-  return 'LoginRequestModel(username: $username, password: $password, status: $status)';
+  return 'LoginRequestModel(username: $username, password: $password, email: $email, status: $status)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $LoginRequestModelCopyWith<$Res>  {
   factory $LoginRequestModelCopyWith(LoginRequestModel value, $Res Function(LoginRequestModel) _then) = _$LoginRequestModelCopyWithImpl;
 @useResult
 $Res call({
- String username, String password, String? status
+ String username, String password, String? email, String? status
 });
 
 
@@ -65,11 +65,12 @@ class _$LoginRequestModelCopyWithImpl<$Res>
 
 /// Create a copy of LoginRequestModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? password = null,Object? status = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? username = null,Object? password = null,Object? email = freezed,Object? status = freezed,}) {
   return _then(_self.copyWith(
 username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String username,  String password,  String? status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String username,  String password,  String? email,  String? status)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoginRequestModel() when $default != null:
-return $default(_that.username,_that.password,_that.status);case _:
+return $default(_that.username,_that.password,_that.email,_that.status);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.username,_that.password,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String username,  String password,  String? status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String username,  String password,  String? email,  String? status)  $default,) {final _that = this;
 switch (_that) {
 case _LoginRequestModel():
-return $default(_that.username,_that.password,_that.status);case _:
+return $default(_that.username,_that.password,_that.email,_that.status);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +197,10 @@ return $default(_that.username,_that.password,_that.status);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String username,  String password,  String? status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String username,  String password,  String? email,  String? status)?  $default,) {final _that = this;
 switch (_that) {
 case _LoginRequestModel() when $default != null:
-return $default(_that.username,_that.password,_that.status);case _:
+return $default(_that.username,_that.password,_that.email,_that.status);case _:
   return null;
 
 }
@@ -211,11 +212,12 @@ return $default(_that.username,_that.password,_that.status);case _:
 @JsonSerializable()
 
 class _LoginRequestModel implements LoginRequestModel {
-  const _LoginRequestModel({required this.username, required this.password, this.status});
+  const _LoginRequestModel({required this.username, required this.password, this.email, this.status});
   factory _LoginRequestModel.fromJson(Map<String, dynamic> json) => _$LoginRequestModelFromJson(json);
 
 @override final  String username;
 @override final  String password;
+@override final  String? email;
 @override final  String? status;
 
 /// Create a copy of LoginRequestModel
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginRequestModel&&(identical(other.username, username) || other.username == username)&&(identical(other.password, password) || other.password == password)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginRequestModel&&(identical(other.username, username) || other.username == username)&&(identical(other.password, password) || other.password == password)&&(identical(other.email, email) || other.email == email)&&(identical(other.status, status) || other.status == status));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,username,password,status);
+int get hashCode => Object.hash(runtimeType,username,password,email,status);
 
 @override
 String toString() {
-  return 'LoginRequestModel(username: $username, password: $password, status: $status)';
+  return 'LoginRequestModel(username: $username, password: $password, email: $email, status: $status)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$LoginRequestModelCopyWith<$Res> implements $LoginRequestM
   factory _$LoginRequestModelCopyWith(_LoginRequestModel value, $Res Function(_LoginRequestModel) _then) = __$LoginRequestModelCopyWithImpl;
 @override @useResult
 $Res call({
- String username, String password, String? status
+ String username, String password, String? email, String? status
 });
 
 
@@ -268,11 +270,12 @@ class __$LoginRequestModelCopyWithImpl<$Res>
 
 /// Create a copy of LoginRequestModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? password = null,Object? status = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? username = null,Object? password = null,Object? email = freezed,Object? status = freezed,}) {
   return _then(_LoginRequestModel(
 username: null == username ? _self.username : username // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
-as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

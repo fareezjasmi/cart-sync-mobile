@@ -10,6 +10,7 @@ _LoginRequestModel _$LoginRequestModelFromJson(Map<String, dynamic> json) =>
     _LoginRequestModel(
       username: json['username'] as String,
       password: json['password'] as String,
+      email: json['email'] as String?,
       status: json['status'] as String?,
     );
 
@@ -17,5 +18,6 @@ Map<String, dynamic> _$LoginRequestModelToJson(_LoginRequestModel instance) =>
     <String, dynamic>{
       'username': instance.username,
       'password': instance.password,
+      'email': instance.email,
       'status': instance.status,
     };
