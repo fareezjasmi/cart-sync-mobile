@@ -34,9 +34,7 @@ class _JoinFamilySheetState extends ConsumerState<JoinFamilySheet> {
       return;
     }
 
-    final success = await ref
-        .read(familyNotifierProvider.notifier)
-        .joinFamily(_codeController.text.trim(), userId);
+    final success = await ref.read(familyNotifierProvider.notifier).joinFamily(_codeController.text.trim(), userId);
 
     if (!mounted) return;
 
@@ -67,10 +65,7 @@ class _JoinFamilySheetState extends ConsumerState<JoinFamilySheet> {
               child: Container(
                 width: 40,
                 height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.divider,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+                decoration: BoxDecoration(color: AppColors.divider, borderRadius: BorderRadius.circular(2)),
               ),
             ),
             const SizedBox(height: 20),
@@ -81,28 +76,25 @@ class _JoinFamilySheetState extends ConsumerState<JoinFamilySheet> {
                 Container(
                   width: 44,
                   height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryXLight,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.group_add_rounded, color: AppColors.primary, size: 22),
-                  ),
+                  decoration: BoxDecoration(color: AppColors.primaryXLight, borderRadius: BorderRadius.circular(14)),
+                  child: const Center(child: Icon(Icons.group_add_rounded, color: AppColors.primary, size: 22)),
                 ),
                 const SizedBox(width: 12),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Join a Family',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Enter the invite code shared by your family admin',
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
-                    ),
-                  ],
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Join a Family',
+                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Enter the invite code shared by your family admin',
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -112,10 +104,7 @@ class _JoinFamilySheetState extends ConsumerState<JoinFamilySheet> {
             if (_error != null) ...[
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.errorLight,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                decoration: BoxDecoration(color: AppColors.errorLight, borderRadius: BorderRadius.circular(12)),
                 child: Row(
                   children: [
                     Icon(Icons.error_outline, color: AppColors.error, size: 18),
