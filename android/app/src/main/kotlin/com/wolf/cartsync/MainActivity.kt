@@ -1,4 +1,4 @@
-package com.example.cartsync
+package com.wolf.cartsync
 
 import io.flutter.embedding.android.FlutterActivity
 
