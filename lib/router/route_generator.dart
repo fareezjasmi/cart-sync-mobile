@@ -1,4 +1,5 @@
 import 'package:cartsync/features/auth/presentation/pages/forgot_password_page.dart';
+import 'package:cartsync/features/user/presentation/pages/privacy_policy_page.dart';
 import 'package:cartsync/features/auth/presentation/pages/reset_password_page.dart';
 import 'package:cartsync/features/family/data/models/family_model.dart';
 import 'package:cartsync/features/family/presentation/pages/family_details_page.dart';
@@ -53,6 +54,9 @@ class RouteGenerator {
 
       case '/session-history':
         return MaterialPageRoute(builder: (_) => const SessionHistoryPage());
+
+      case '/privacy-policy':
+        return MaterialPageRoute(builder: (_) => const PrivacyPolicyPage());
 
       case '/create-checklist':
         final sessionId = settings.arguments as String;

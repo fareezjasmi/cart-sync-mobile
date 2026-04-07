@@ -202,6 +202,21 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       // ]),
                       // const SizedBox(height: 20),
 
+                      // Legal section
+                      _buildSectionLabel('Legal'),
+                      const SizedBox(height: 8),
+                      _buildCard([
+                        _buildSettingsRow(
+                          icon: Icons.privacy_tip_outlined,
+                          iconBg: AppColors.primaryXLight,
+                          iconColor: AppColors.primary,
+                          title: 'Privacy Policy',
+                          subtitle: 'How we handle your data',
+                          onTap: () => Navigator.pushNamed(context, '/privacy-policy'),
+                        ),
+                      ]),
+                      const SizedBox(height: 20),
+
                       // Sign out
                       _buildCard([
                         _buildSettingsRow(
